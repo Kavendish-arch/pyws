@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> index {{ user }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/item.css') }}">
+</head>
+<body>
+{% include 'title.html' %}
+<p>Layout html</p>
+{% block keng %}{% endblock %}
+{% block users %}{% endblock %}
+<p>Great 2 !</p>
+{% include 'footer.html' %}
+</body>
+</html>
