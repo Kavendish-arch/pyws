@@ -10,17 +10,8 @@ from contextlib import closing
 from item import Moive
 
 
-def load_file(filename):
-    with open(filename, 'r', encoding='utf-8') as f:
-        for i, line in enumerate(f):
-            if i == 0:
-                # 去掉文件第一行的title
-                continue
-            yield line.strip('\r\n')
-    print('Load %s success!' % filename)
-
-
 class ItemBasedCF(object):
+
     # 初始化参数 构造方法
     def __init__(self):
         # 找到相似的20部电影，为目标用户推荐10部电影
@@ -39,13 +30,23 @@ class ItemBasedCF(object):
         print('Similar movie number = %d' % self.n_sim_movie)
         print('Recommneded movie number = %d' % self.n_rec_movie)
 
+
+    def load_file(self, filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            for i, line in enumerate(f):
+                if i == 0:
+                    # 去掉文件第一行的title
+                    continue
+                yield line.strip('\r\n')
+        print('Load %s success!' % filename)
+
     # 读文件得到“用户-电影”数据
     def get_dataset(self, filename, pivot=0.75):
 
         trainSet_len = 0
         testSet_len = 0
         # 加载文件， 按行读取
-        for line in load_file(filename):
+        for line in self.load_file(filename):
             # 读取列属性
             user, movie, rating, timestamp = line.split(',')
             # 数据划分测试集合和数据集合 (0,1) < (0,pivot)
@@ -74,6 +75,7 @@ class ItemBasedCF(object):
         self.movie_count = len(self.movie_popular)
         print("Total movie number = %d" % self.movie_count)
         # 遍历训练数据，获得用户对有过的行为的物品
+
         for user, movies in self.trainSet.items():
             # 遍历该用户每件物品项
             for m1 in movies:
@@ -96,8 +98,10 @@ class ItemBasedCF(object):
                 if self.movie_popular[m1] == 0 or self.movie_popular[m2] == 0:
                     self.movie_sim_matrix[m1][m2] = 0
                 else:
-                    self.movie_sim_matrix[m1][m2] = count / math.sqrt(
-                        self.movie_popular[m1] * self.movie_popular[m2])
+                    # self.movie_sim_matrix[m1][m2] = count / math.sqrt(
+                    #     self.movie_popular[m1] * self.movie_popular[m2])
+                    self.movie_sim_matrix[m1][m2] = count /(
+                        self.movie_popular[m1] + self.movie_popular[m2] - count)
         print('Calculate movie similarity matrix success!')
 
     # 针对目标用户U，找到K部相似的电影，并推荐其N部电影，
@@ -107,15 +111,24 @@ class ItemBasedCF(object):
         N = self.n_rec_movie
         # 用户user对物品的偏好值
         rank = {}
+        watched_movies = {}
         # 用户user产生过行为的物品，与物品item按相似度从大到小排列，取与物品item相似度最大的k个商品
+        if user in self.trainSet:
+            pass
+        else:
+            print("user other method")
         try:
             watched_movies = self.trainSet[user]
         except KeyError:
             print(user + " is not exits")
+
         for movie, rating in watched_movies.items():
             # 遍历与物品item最相似的前k个产品，获得这些物品及相似分数
-            for related_movie, w in sorted(self.movie_sim_matrix[movie].items(),
-                                           key=itemgetter(1), reverse=True)[:K]:
+            # if movie not in self.movie_sim_matrix:
+                # continue
+            for related_movie, w in \
+                    sorted(self.movie_sim_matrix[movie].items(),
+                           key=itemgetter(1), reverse=True)[:K]:
                 # 若该物品为当前物品，跳过
                 if related_movie in watched_movies:
                     continue
@@ -128,6 +141,7 @@ class ItemBasedCF(object):
 
     # 产生推荐并通过准确率、召回率和覆盖率进行评估
     def evaluate(self):
+
         print('Evaluating start ...')
         N = self.n_rec_movie
         # 准确率和召回率
@@ -138,10 +152,14 @@ class ItemBasedCF(object):
         all_rec_movies = set()
 
         for i, user in enumerate(self.trainSet):
+            # 测试集和 == 实际观看的
             test_moives = self.testSet.get(user, {})
+            # 推荐集合 ==
             rec_movies = self.recommend(user)
+
             for movie, w in rec_movies:
                 if movie in test_moives:
+                    # 命中率
                     hit += 1
                 all_rec_movies.add(movie)
             rec_count += N
@@ -180,10 +198,13 @@ class ItemBasedCF(object):
 
 
 if __name__ == '__main__':
+    os.path.exists("..\\file\\ratings.csv")
     itemCF = ItemBasedCF()
-    itemCF.read_data()
+    itemCF.get_dataset('..\\file\\ratings.csv')
     movie = Moive.MovieDetails()
-    movie.read_data()
+    movie.get_movie_data('..\\file\\movies.csv')
+
+    print('-'*10)
 
     list_item = itemCF.recommend('1')
     for movie_id, similar in list_item:

@@ -38,5 +38,5 @@ if __name__ == "__main__":
     path = os.path.abspath(os.curdir) + \
            "\\bigdata\\ml-latest-small\\movies.csv"
     movieDetails = MovieDetails()
-    movieDetails.read_data()
-    print(movieDetails.get_title('1'))
+    movieDetails.get_movie_data(path)
+    print(movieDetails.movie_list)
