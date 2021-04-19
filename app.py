@@ -4,6 +4,8 @@ from item import Moive, ItemCF
 import numpy
 from flask_cors import *
 
+from item.ItemCF import ItemBasedCF
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True) #设置跨域
 
@@ -12,20 +14,25 @@ CORS(app, supports_credentials=True) #设置跨域
 def hello_world():
     return render_template("index.html")
 
+
 @app.route('/to_login/<name>', methods=['GET'])
 def login_page(name=None):
     return render_template("base/login.html")
 
 
+@app.route('/get/<int:recommend_id>', methods=['GET', 'POST'])
+def get_recommend(recommend_id=None):
+    itemCF = ItemCF.ItemBasedCF()
+    itemCF.get_dataset('file\\ratings.csv')
+    itemCF.build_movie_matrix()
+    itemCF.calc_movie_sim()
 
+    movie = Moive.MovieDetails()
+    movie.get_movie_data('file\\movies.csv')
 
-@app.route('/get/<int:movie_id>', methods=['GET','POST'])
-def hello_int(movie_id=None):
-    keyword = request.args.get('enc', '')
-    print(keyword)
-    return {'movie_id':movie_id,'movie_name':"新"}
-
-
+    list_item = itemCF.recommend(str(recommend_id))
+    print(recommend_id, len(list_item))
+    return {"movie":list_item}
 
 
 @app.route('/user_list/<int:user_id>')

@@ -24,13 +24,14 @@ class ItemBasedCF(object):
 
         # 用户相似度 矩阵
         self.movie_sim_matrix = {}
+        # 电影-观看数统计
         self.movie_popular = {}
         self.movie_count = 0
 
         print('Similar movie number = %d' % self.n_sim_movie)
         print('Recommneded movie number = %d' % self.n_rec_movie)
 
-
+    # 读文件，返回文件的每一行
     def load_file(self, filename):
         with open(filename, 'r', encoding='utf-8') as f:
             for i, line in enumerate(f):
@@ -62,20 +63,16 @@ class ItemBasedCF(object):
         print('TrainSet = %s' % trainSet_len)
         print('TestSet = %s' % testSet_len)
 
-    # 读文件，返回文件的每一行
-
-    # 计算电影之间的相似度
-    def calc_movie_sim(self):
+    def build_movie_matrix(self):
         for user, movies in self.trainSet.items():
             for movie in movies:
                 if movie not in self.movie_popular:
                     self.movie_popular[movie] = 0
                 self.movie_popular[movie] += 1
-
         self.movie_count = len(self.movie_popular)
         print("Total movie number = %d" % self.movie_count)
-        # 遍历训练数据，获得用户对有过的行为的物品
 
+        # 遍历训练数据，获得用户对有过的行为的物品
         for user, movies in self.trainSet.items():
             # 遍历该用户每件物品项
             for m1 in movies:
@@ -90,6 +87,8 @@ class ItemBasedCF(object):
                     self.movie_sim_matrix[m1][m2] += 1
         print("Build 同现矩阵co-rated users matrix success!")
 
+    # 计算电影之间的相似度
+    def calc_movie_sim(self):
         # 计算电影之间的相似性
         print("Calculating movie similarity matrix ...")
         for m1, related_movies in self.movie_sim_matrix.items():
@@ -198,12 +197,14 @@ class ItemBasedCF(object):
 
 
 if __name__ == '__main__':
-    os.path.exists("..\\file\\ratings.csv")
-    itemCF = ItemBasedCF()
-    itemCF.get_dataset('..\\file\\ratings.csv')
+    if os.path.exists("..\\file\\ratings.csv"):
+        itemCF = ItemBasedCF()
+        itemCF.get_dataset('..\\file\\ratings.csv')
+        itemCF.build_movie_matrix()
+        itemCF.calc_movie_sim()
+
     movie = Moive.MovieDetails()
     movie.get_movie_data('..\\file\\movies.csv')
-
     print('-'*10)
 
     list_item = itemCF.recommend('1')

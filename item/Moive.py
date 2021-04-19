@@ -40,3 +40,6 @@ if __name__ == "__main__":
     movieDetails = MovieDetails()
     movieDetails.get_movie_data(path)
     print(movieDetails.movie_list)
+
+    for i,key in movieDetails.movie_list.items():
+        print(i,key)
