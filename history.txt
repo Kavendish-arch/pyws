@@ -1,0 +1,500 @@
+    6  git status
+    7  git add .
+    8  git status
+    9  ls
+   10  cd .git/
+   11  ls
+   12  ls
+   13  cd ..
+   14  ls
+   15  clear
+   16  pwd
+   17  touch .gitignore
+   18  vim .gitignore 
+   19  mkdir node_modules
+   20  ls
+   21  git status
+   22  touch node_modules/json.js
+   23  git status
+   24  vim .gitignore
+   25  git status
+   26  cd node_modules/
+   27  ls
+   28  cd ..
+   29  vim .gitignore 
+   30  open .
+   31  git commit -m 'new stuff'
+   32  git log
+   33  git rm -r --cached
+   34  git rm --r -cached
+   35  git rm -r --cached
+   36  vim .gitignore 
+   37  git checkout - - index.html
+   38  git checkout -- index.html
+   39  git checkout --index.html
+   40  ls
+   41  vim 4.txt 
+   42  git checkout -- 4.txt
+   43  vim 4.txt 
+   44  git log
+   45  git log --oneline
+   46  git reset HEAD 4.txt
+   47  vim 4.txt 
+   48  git reset HEAD 4.txt
+   49  vim 4.txt 
+   50  git status
+   51  git reset HEAD 4.txt
+   52  git checkout -- 4.txt
+   53  vim 4.txt 
+   54  ls
+   55  git status
+   56  vim .gitignore 
+   57  git add .
+   58  git commit -m '34.23'
+   59  git log --oneline
+   60  git commit -am 'v1'
+   61  vim 4.txt 
+   62  git commit -am 'v1'
+   63  vim 4.txt 
+   64  git commit -am 'v2'
+   65  git reset --hard HEAD^
+   66  vim 4.txt 
+   67  git reset --hard HEAD^^
+   68  git log --oneline
+   69  git reset --hard 160c7a4
+   70  clear
+   71  git log --oneline
+   72  git reflog
+   73  git log
+   74  git log --oneline
+   75  pwd
+   76  ls
+   77  git commit -am 'perfer'
+   78  git add .
+   79  git commit -am 'perfer'
+   80  git log --oneline
+   81  git checkout 160c7a4 -- index.html
+   82  ls
+   83  vim index.html 
+   84  rm index.html 
+   85  git log --oneline
+   86  git checkout 160c7a4 -- index.html
+   87  ls
+   88  git status
+   89  git log --oneline
+   90  ls
+   91  rm .
+   92  rm *
+   93  ls
+   94  git checkout 160c7a4 -- .
+   95  ls
+   96  git log --oneline 
+   97  git checkout f129bea -- .
+   98  ls
+   99  clear
+  100  git log
+  101  clear
+  102  git branch
+  103  git log
+  104  git branch
+  105  git branch develop
+  106  git branch
+  107  git checkout -b v3 
+  108  git branch
+  109  git checkout master
+  110  git branch
+  111  git checkout v3
+  112  git status
+  113  ls
+  114  git log
+  115  clear
+  116  git status
+  117  git commit -am 'v3'
+  118  ls
+  119  rm *.txt
+  120  ls
+  121  git commit -am 'v3'
+  122  git log --oneline
+  123  git branch -d develop
+  124  git branch
+  125  clear
+  126  git branch
+  127  git merge v3
+  128  git branch
+  129  git checkout master
+  130  git branch
+  131  git merge v3
+  132  git branch
+  133  git merge v3
+  134  ls
+  135  vim hello.c 
+  136  git checkout v3
+  137  ls
+  138  vim hello.c 
+  139  git checkout master
+  140  ls
+  141  git merge v3
+  142  git checkout v3
+  143  git log
+  144  ls
+  145  vim index.html 
+  146  git commit -m 'v3of'
+  147  git add .
+  148  git commit -m 'v3of'
+  149  git log --oneline
+  150  git checkout master
+  151  ls
+  152  vim hello.c 
+  153  git commit -am 'master'
+  154  git log -m 'master'
+  155  git log -oneline
+  156  git log --oneline
+  157  git checkout v3
+  158  git log --oneline
+  159  git log --oneline --graph
+  160  git log --oneline --graph --all
+  161  ls
+  162  ls -al
+  163  rm .git
+  164  rm -rf .git/
+  165  ls
+  166  git init
+  167  git log
+  168  git commit -m '1.1.1'
+  169  git commit -am '1.1.1'
+  170  git add .
+  171  git commit -am '1.1.1'
+  172  git log --oneline --graph
+  173  ls
+  174  rm hello.c 
+  175  git add .
+  176  git status
+  177  git commit -m 'delete one'
+  178  git log --oneline --graph
+  179  git branch -b develop
+  180  git checkout -b develop
+  181  ls
+  182  vim index.html 
+  183  git commit -am 'develop'
+  184  git log --oneline --graph
+  185  git status
+  186  git checkout master
+  187  git log --oneline --graph
+  188  git log --oneline --graph --all
+  189  ls
+  190  git checkout master
+  191  ls
+  192  vim index.html 
+  193  git commit -am 'v3'
+  194  git branch v5
+  195  git branch
+  196  git log --oneline --graph --all
+  197  git checkout v5 
+  198  ls
+  199  vim index.html 
+  200  git commit -am 'v5'
+  201  git log --oneline --graph --all
+  202  git checkout develop
+  203  git branch develop2 
+  204  ls
+  205  vim index.html 
+  206  git commit -m 'develop2'
+  207  git add .
+  208  git commit -m 'develop2'
+  209  git log --oneline --graph --al
+  210  git log --oneline --graph --all
+  211  git status
+  212  git branch develop3
+  213  git log --oneline --graph --all
+  214  ls
+  215  git branch
+  216  git checkout develop
+  217  git checkout develop3
+  218  git checkout develop2
+  219  ls
+  220  vim index.html 
+  221  git commit -m 'develop2
+  222  '
+  223  git add .
+  224  git commit -m 'develop2'
+  225  git checkout master
+  226  git log --oneline --graph --all
+  227  git remote add origin https://github.com/Kavendish-arch/book.git
+  228  git remote
+  229  git push --set-upstream origin master
+  230  git rmote rm origin
+  231  git remote rm origin
+  232  git remote add origin git@github.com:Kavendish-arch/book.git
+  233  git remote
+  234  git push --set-upstream origin master
+  235  git push --set-upstream origin master
+  236  git push -u origin master
+  237  git remote rm origin
+  238  git remote add origin git@github.com:Kavendish-arch/book.git
+  239  git remote
+  240  git push -u origin master
+  241  git remote -v
+  242  git config --list
+  243  git status
+  244  ssh-add ~/.ssh/id_rsa
+  245  ssh -vvv
+  246  ssh 
+  247  cd ~
+  248  pwd
+  249  ssh-keygen -t rsa -C 'c "chen_yingtao.126.com"
+  250  ssh-keygen -t rsa -C 'c "chen_yingtao@126.com"
+  251  ssh-keygen -t rsa -C "chen_yingtao@126.com"
+  252  cd .ssh/
+  253  ls
+  254  vim id_rsa.pub 
+  255  git push -u origin master
+  256  git remote rm origin
+  257  git remote
+  258  git remote add origin https://github.com/Kavendish-arch/book.git
+  259  git push -u origin master
+  260  ls
+  261  cd ..
+  262  ls
+  263  cd get_demo/
+  264  ls
+  265  git push -u orgin master
+  266  git remote 
+  267  git remote --list
+  268  git remote rm origin
+  269  git remote add origin https://github.com/Kavendish-arch/book.git
+  270  git push -u origin master
+  271  git remote rm origin
+  272  git remote add origin git@github.com:Kavendish-arch/book.git
+  273  git remote
+  274  git push -u origin master
+  275  git remote
+  276  exit
+  277  git branch -a 
+  278  git remeto origin
+  279  git remote roigin
+  280  git remote
+  281  git branch -a 
+  282  ls
+  283  cd get_demo/
+  284  ls
+  285  git branch -a 
+  286  git push -u origin develop
+  287  git branch -a
+  288  git remote -v
+  289  git pull
+  290  git push
+  291  git branch --oneline 
+  292  git branch 
+  293  git pull
+  294  git branch 
+  295  git remote set-url origin git@github.com:Kavendish-arch/hello-world.git
+  296  git remote -v
+  297  git push --all
+  298  git branch -a
+  299  git push origin --delete remotes/origin/develop3
+  300  cd ..
+  301  cd F:
+  302  ls
+  303  f:
+  304  cd WeChatDemo/
+  305  git init
+  306  ls
+  307  ls -al
+  308  ls
+  309  touch .gitignore
+  310  vim .gitignore 
+  311  git branch
+  312  git status
+  313  vim .gitignore 
+  314  git status
+  315  ls
+  316  cd get_demo/
+  317  git clone https://github.com/wizardforcel/think-os-zh.git
+  318  cd /
+  319  pwd
+  320  cd get_demo/
+  321  git clone https://github.com/ehmatthes/pcc_2e.git
+  322  pwd
+  323  cd C:\Windows\System32\drivers\etc
+  324  cd /
+  325  cd ..
+  326  ls
+  327  cd ..
+  328  ls
+  329  cd ls
+  330  cd /
+  331  ls
+  332  cd ~
+  333  pwd
+  334  cd get_demo/
+  335  clear
+  336  git clone https://github.com/ehmatthes/pcc_2e.git
+  337  cd get_demo/
+  338  git clone https://github.com/ehmatthes/pcc_2e.git
+  339  rm pcc_2e/
+  340  rmdir pcc_2e/
+  341  git clone https://github.com/ehmatthes/pcc_2e.git
+  342  #!/bin/bash
+  343  echo "This Shell Script will install dependencies for cocos2d-x" 
+  344  echo -n "Are you continue? (y/n) "
+  345  read answer
+  346  if echo "$answer" | grep -iq "^y" ;then     echo "It will take few minutes"; else     exit; fi
+  347  sudo apt-get update
+  348  # run 32bit applicatio: needed for lua relase mode as luajit has 32bit version
+  349  # https://askubuntu.com/questions/454253/how-to-run-32-bit-app-in-ubuntu-64-bit
+  350  sudo dpkg --add-architecture i386
+  351  DEPENDS='libc6:i386 libncurses5:i386 libstdc++6:i386'
+  352   
+  353  DEPENDS+=' libx11-dev'
+  354  DEPENDS+=' libxmu-dev'
+  355  DEPENDS+=' libglu1-mesa-dev'
+  356  DEPENDS+=' libgl2ps-dev'
+  357  DEPENDS+=' libxi-dev'
+  358  DEPENDS+=' libzip-dev'
+  359  DEPENDS+=' libpng-dev'
+  360  DEPENDS+=' libcurl4-gnutls-dev'
+  361  DEPENDS+=' libfontconfig1-dev'
+  362  DEPENDS+=' libsqlite3-dev'
+  363  DEPENDS+=' libglew-dev'
+  364  DEPENDS+=' libssl-dev'
+  365  DEPENDS+=' libgtk-3-dev'
+  366  DEPENDS+=' binutils'
+  367  sudo apt-get install --force-yes --yes $DEPENDS > /dev/null
+  368  git config --list
+  369  git clone https://github.com/JaniceWuo/MovieRecommend.git 
+  370  git init
+  371  git status
+  372  git add .
+  373  git status
+  374  git log 
+  375  git log --online
+  376  git remote add origin git@github.com:Kavendish-arch/-.git
+  377  git branch -M main
+  378  code .gitignore
+  379  touch .gitignore
+  380  vim .gitignore 
+  381  git status
+  382  git add .
+  383  git status
+  384  git commit -m 'first times 2021.03.21 开题结束'
+  385  git log
+  386  git log --online
+  387  git log --oneline
+  388  git remote add origin git@github.com:Kavendish-arch/BiYeSheJi.git
+  389  git push -u origin master
+  390  git push -u origin master
+  391  git push -u origin master
+  392  git rm -r --cached ItemCF和UserCF协同过滤算法参考代码/MovieRecommendation-master/
+  393  vim .gitignore 
+  394  quit() ;
+  395  .gitignore
+  396  git branch
+  397   ls
+  398  .gitignore
+  399  vim .gitignore 
+  400  git rm -r --cached
+  401  git rm -r--cached
+  402  git rm -r--cached ItemCF和UserCF协同过滤算法参考代码/
+  403  git rm -r --cached ItemCF和UserCF协同过滤算法参考代码/
+  404  git show Author
+  405  git show Author:xxx
+  406  git show Author:master
+  407  git config -list
+  408  git config --list
+  409  git push -u origin master
+  410  git init
+  411  git add *
+  412  git add .
+  413  git commit -m 'init commit'
+  414  git status 
+  415  git commit -m 'init commit'
+  416  git remote add origin git@github.com:Kavendish-arch/BiYeSheJi.git 
+  417  git push origin master
+  418  git push origin master
+  419  git add .
+  420  git commit 
+  421  git commit -m '2021年4月9ri'
+  422  git push origin master
+  423  git remote
+  424  git remote -v 
+  425  git push ps_py 
+  426  git push ps_py master 
+  427  git remote remove bs_py
+  428  git remote -v 
+  429  ls
+  430  mkdir ws
+  431  cd ws/
+  432  git clone git@github.com:Kavendish-arch/py.git
+  433  git clone git@github.com:Kavendish-arch/py.git
+  434  git config --global user.name 'Kavendish-arch'
+  435  git config --global user.email 'chen_yingtao@outlook.com'
+  436  ssh-keygen -t rsa -C 'Kavendish-arch'
+  437  git remote -v
+  438  git remote add py git@github.com:Kavendish-arch/py.git
+  439  git commit -m 'init2'
+  440  git push py master 
+  441  git push py master 
+  442  git pull
+  443  git push py master 
+  444  git pull 
+  445  git remote -v
+  446  git remote remove py
+  447  git remote -v
+  448  git remote add py git@github.com:Kavendish-arch/pyws.git
+  449  git push py master 
+  450  cd ..
+  451  ls
+  452  cd newSite/
+  453  git init
+  454  git commit -m 'init ws'
+  455  git add .
+  456  git commit -m 'init ws'
+  457  git push py master 
+  458  git remote -v 
+  459  git remote -v
+  460  git remote add origin git@github.com:Kavendish-arch/pyws.git
+  461  git remote -v
+  462  git push origin master 
+  463  git add .
+  464  git commit -m 'ajax learn'
+  465  git push pyws master
+  466  git remote -v
+  467  git push origin master
+  468  ls
+  469  vi .gitignore
+  470  git add .
+  471  vi .gitignore
+  472  git add .
+  473  git rm -r --cached 
+  474  git rm -r -cached
+  475  git rm -r --cached
+  476  git rm -r --cachedgit rm -r--cached
+  477  git rm -r --cachedgit rm -r- -cached
+  478  git rm -r --cached .
+  479  vi .gitignore
+  480  git commit -m "2021年4月18日 init commit "
+  481  git status
+  482  git add .
+  483  git rm -r --cached .
+  484  git rm -f -r --cached .
+  485  git add .
+  486  git commit -m "2021年4月18日 init commit "
+  487  git config --global core.autocrlf false
+  488  git add .
+  489  git remote
+  490  git remote -v 
+  491  git push origin master 
+  492  git remote add bs_py git@github.com:Kavendish-arch/py.git
+  493  git push ps_py master 
+  494  Please make sure you have the correct access rights
+  495  cd ~/.ssh/
+  496  ls
+  497  rm known_hosts 
+  498  ssh-keygen -t rsa -C "chen"
+  499  ls
+  500  vi id_rsa.pub 
+  501  git add .
+  502  git commit -m '2021.2.19 update ItemCF.py'
+  503  git remote -v 
+  504  git push origin master
+  505  history >> history.txt

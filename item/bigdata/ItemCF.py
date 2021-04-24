@@ -1,10 +1,10 @@
 # ItemCF 协同过滤算法
 
-import os 
-import random
 import math
 from operator import itemgetter
 import tool
+
+
 class ItemCF(object):
 
     def __init__(self):
@@ -12,15 +12,19 @@ class ItemCF(object):
         self.testSet = {}
         self.trainSet_len = 0
         self.testSet_len = 0
-        
+
         self.movie_sim_matrix = {}
         self.movie_popular = {}
 
+        self.evaluates = {}
+
+        self.n_sim_movie = 20
+        self.n_rec_movie = 20
 
     def initData(self, path):
         # read file
         self.trainSet, self.testSet = tool.get_dataset(path)
-    
+
     def count_movie(self):
         # 统计电影的播放次数，movie_movie 矩阵
         # 统计电影被看的次数
@@ -30,7 +34,7 @@ class ItemCF(object):
                     self.movie_popular[movie] = 0
                 self.movie_popular[movie] += 1
         print("Total movie number = %d" % len(self.movie_popular))
-    
+
     def create_movie_movie_matrix(self):
         # 遍历训练数据，获得用户对有过的行为的物品
         for user, movies in self.trainSet.items():
@@ -47,7 +51,6 @@ class ItemCF(object):
                     self.movie_sim_matrix[m1][m2] += 1
         print("Build 同现矩阵co-rated users matrix success!")
 
-    
     # 计算电影之间的相似度 相似度算法 AB交集 / 根号下(A*B)
     def calc_movie_sim(self):
         # 计算电影之间的相似性
@@ -58,11 +61,14 @@ class ItemCF(object):
                 if self.movie_popular[m1] == 0 or self.movie_popular[m2] == 0:
                     self.movie_sim_matrix[m1][m2] = 0
                 else:
-                    self.movie_sim_matrix[m1][m2] = count / math.sqrt(self.movie_popular[m1] * self.movie_popular[m2])
+                    self.movie_sim_matrix[m1][m2] \
+                        = count / math.sqrt(self.movie_popular[m1]
+                                            * self.movie_popular[m2])
         print('Calculate movie similarity matrix success!')
 
     # 计算电影之间的相似度, jacard 算法 交集/并集
     def calc_movie_sim_jacard(self):
+
         # 计算电影之间的相似性
         print("Calculating movie similarity matrix ...")
         for m1, related_movies in self.movie_sim_matrix.items():
@@ -71,70 +77,103 @@ class ItemCF(object):
                 if self.movie_popular[m1] == 0 or self.movie_popular[m2] == 0:
                     self.movie_sim_matrix[m1][m2] = 0
                 else:
-                    self.movie_sim_matrix[m1][m2] = count / (self.movie_popular[m1] + self.movie_popular[m2] -count)
+                    self.movie_sim_matrix[m1][m2] \
+                        = count / (self.movie_popular[m1]
+                                   + self.movie_popular[m2] - count)
         # jacard = (交集)/(并集)
         print('Calculate movie similarity matrix success!')
-
 
     # 针对目标用户U，找到K部相似的电影，并推荐其N部电影，
     # 用户未产生过行为的物品
     def recommend(self, user_id):
-    #  user, n_sim_movie, n_rec_movie, trainSet, movie_sim_matrix):
-        K = n_sim_movie
-        N = n_rec_movie
+        K = self.n_sim_movie
+        N = self.n_rec_movie
         # 用户user对物品的偏好值
         self.rank = {}
         # 用户user产生过行为的物品，与物品item按相似度从大到小排列，取与物品item相似度最大的k个商品
         # 验证是否有用户的历史记录
-        if user_id in trainSet:
+        if user_id in self.trainSet:
             pass
         else:
             print("use other method to recommend !")
         try:
-            watched_movies = trainSet[user_id]
+            watched_movies = self.trainSet[user_id]
         except KeyError:
-            print(user + " is not exits")
+            print(user_id + " is not exits")
 
         for movie, rating in watched_movies.items():
             # 遍历与物品item最相似的前k个产品，获得这些物品及相似分数
-            for related_movie, w in sorted(self.movie_sim_matrix[movie].items(), key=itemgetter(1), reverse=True)[:K]:
+            for related_movie, w in \
+                    sorted(self.movie_sim_matrix[movie].items(),
+                        key=itemgetter(1), reverse=True)[:K]:
                 # 若该物品为当前物品，跳过
                 if related_movie in watched_movies:
                     continue
                 # 计算用户user对related_movie的偏好值，初始化该值为0
-                rank.setdefault(related_movie, 0)
+                self.rank.setdefault(related_movie, 0)
                 # 通过与其相似物品对物品related_movie的偏好值相乘并相加。
                 # 排名的依据—— > 推荐电影与该已看电影的相似度(累计) * 用户对已看电影的评分
-                rank[related_movie] += w * float(rating)
-        return sorted(rank.items(), key=itemgetter(1), reverse=True)[:N]
-
-
+                self.rank[related_movie] += w * float(rating)
+        return sorted(self.rank.items(), key=itemgetter(1), reverse=True)[:N]
 
     # 产生推荐并通过准确率、召回率和覆盖率进行评估
     def evaluate(self):
-        print('Evaluating start ...')
+        print('算法评价过程......')
         N = self.n_rec_movie
         # 准确率和召回率
-        hit = 0
+        # 总命中数
+        all_hit = 0
+        # 总推荐数
         rec_count = 0
+        # 总结果数
         test_count = 0
+        # 每个用户的 评价
         # 覆盖率
         all_rec_movies = set()
-
+        # i, user：user_id
         for i, user in enumerate(self.trainSet):
+            hit = 0
+            # 读取测试集
             test_moives = self.testSet.get(user, {})
+            # 推荐集合
             rec_movies = self.recommend(user)
+            user_evaluate = {}
             for movie, w in rec_movies:
                 if movie in test_moives:
+                    # 推荐结果命中
                     hit += 1
+                # 所有推荐的电影
                 all_rec_movies.add(movie)
+            all_hit += hit
             rec_count += N
+
+            # 每个用户的 f1 score
+            if len(rec_movies) == 0:
+                user_precision = 0
+            else:
+                user_precision = hit / len(rec_movies)
+            if len(test_moives) == 0:
+                user_recall = 0
+            else:
+                user_recall = hit / len(test_moives)
+            if user_recall + user_precision == 0:
+                f1_score = 'error'
+            else:
+                f1_score = 2 * user_precision * user_recall \
+                       / (user_precision + user_recall)
+            user_evaluate.setdefault('precision',user_precision)
+            user_evaluate.setdefault('recall', user_recall)
+            user_evaluate.setdefault('f1_score',f1_score)
+            self.evaluates.setdefault(user, user_evaluate)
+
             test_count += len(test_moives)
 
         precision = hit / (1.0 * rec_count)
         recall = hit / (1.0 * test_count)
-        coverage = len(all_rec_movies) / (1.0 * self.movie_count)
-        print('precisioin=%.4f\trecall=%.4f\tcoverage=%.4f' % (
+        coverage = len(all_rec_movies) / (1.0 * len(self.movie_popular))
+        print('命中=%.4f\t召回=%.4f\t推荐=%.4f' % (
+            all_hit, rec_count, test_count))
+        print('总命中率=%.4f\t总召回率=%.4f\t推荐电影占比=%.4f' % (
             precision, recall, coverage))
 
 
@@ -150,31 +189,39 @@ if __name__ == "__main__":
     a = datetime.now()
     item.initData(path)
     b = datetime.now()
-    time_count.setdefault("read_file_time",b-a)
-    print((b-a).seconds)
-    
+    time_count.setdefault("read_file_time", b - a)
+    print((b - a).seconds)
+
     a = datetime.now()
     item.count_movie()
     b = datetime.now()
-    time_count.setdefault("create_movie_popular",b-a)
-    print((b-a).seconds)
-    
+    time_count.setdefault("create_movie_popular", b - a)
+    print((b - a).seconds)
+
     a = datetime.now()
     item.create_movie_movie_matrix()
     b = datetime.now()
-    time_count.setdefault("create_movie_movie_matrix",b-a)
-    print((b-a).seconds)
-    
+    time_count.setdefault("create_movie_movie_matrix", b - a)
+    print((b - a).seconds)
+
     a = datetime.now()
     item.calc_movie_sim()
     b = datetime.now()
-    print((b-a).seconds)
-    time_count.setdefault("method_calc_movie_sim_1",b-a)
+    print((b - a).seconds)
+    time_count.setdefault("method_calc_movie_sim_1", b - a)
 
     a = datetime.now()
     item.calc_movie_sim_jacard()
     b = datetime.now()
-    print((b-a).seconds)
-    time_count.setdefault("method_calc_movie_sim_2",b-a)
+    print((b - a).seconds)
+    time_count.setdefault("method_calc_movie_sim_2", b - a)
 
     print(time_count)
+
+    print('-'*10)
+    item.evaluate()
+    for i, score in item.evaluates.items():
+        print(i, score)
+        # print(i," f1=%4f, precision=%4f, recall=%4f"%(
+        #   score.get('f1_score'), score.get("precision"),score.get('recall')
+        #))

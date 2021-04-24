@@ -30,9 +30,11 @@ def get_recommend(recommend_id=None):
     movie = Moive.MovieDetails()
     movie.get_movie_data('file\\movies.csv')
 
+    data = []
     list_item = itemCF.recommend(str(recommend_id))
-    print(recommend_id, len(list_item))
-    return {"movie":list_item}
+    for movie_id, similar in list_item:
+        data.append([movie_id, similar, movie.get_title(movie_id)])
+    return {"movie":data, "detail":itemCF.evaluate()}
 
 
 @app.route('/user_list/<int:user_id>')

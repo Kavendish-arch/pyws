@@ -169,6 +169,7 @@ class ItemBasedCF(object):
         coverage = len(all_rec_movies) / (1.0 * self.movie_count)
         print('precisioin=%.4f\trecall=%.4f\tcoverage=%.4f' % (
             precision, recall, coverage))
+        return (precision, recall, coverage)
 
     def save_data(self):
         with closing(shelve.open('temp_data', 'c')) as shelf:

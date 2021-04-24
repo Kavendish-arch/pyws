@@ -1,7 +1,7 @@
-
 import random
 
-# read file 
+
+# read file
 def load_file(filename):
     with open(filename, 'r', encoding='utf-8') as f:
         for i, line in enumerate(f):
@@ -10,6 +10,7 @@ def load_file(filename):
                 continue
             yield line.strip('\r\n')
     print('Load %s success!' % filename)
+
 
 def get_dataset(filename, pivot=0.75):
     trainSet = {}
@@ -64,5 +65,3 @@ def count_movie(trainSet):
                 movie_sim_matrix[m1][m2] += 1
     print("Build 同现矩阵co-rated users matrix success!")
     return movie_popular, movie_sim_matrix
-
-    
