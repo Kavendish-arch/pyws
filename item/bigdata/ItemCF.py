@@ -3,7 +3,8 @@
 import math
 from operator import itemgetter
 import tool
-
+import shelve
+from contextlib import closing
 
 class ItemCF(object):
 
@@ -138,12 +139,17 @@ class ItemCF(object):
             # 推荐集合
             rec_movies = self.recommend(user)
             user_evaluate = {}
+            user_evaluate.setdefault('train_len',len(self.trainSet.get(user)))
+            user_evaluate.setdefault('test_len',len(test_moives))
+            user_evaluate.setdefault('rec_len',len(rec_movies))
+
             for movie, w in rec_movies:
                 if movie in test_moives:
                     # 推荐结果命中
                     hit += 1
                 # 所有推荐的电影
                 all_rec_movies.add(movie)
+            user_evaluate.setdefault('hit',hit)
             all_hit += hit
             rec_count += N
 
@@ -171,15 +177,15 @@ class ItemCF(object):
         precision = hit / (1.0 * rec_count)
         recall = hit / (1.0 * test_count)
         coverage = len(all_rec_movies) / (1.0 * len(self.movie_popular))
-        print('命中=%.4f\t召回=%.4f\t推荐=%.4f' % (
+        print('命中=%.4f\t推荐总数=%.4f\t结果集总数=%.4f' % (
             all_hit, rec_count, test_count))
-        print('总命中率=%.4f\t总召回率=%.4f\t推荐电影占比=%.4f' % (
+        print('总命中率=%.10f\t总召回率=%.10f\t推荐电影占比=%.10f' % (
             precision, recall, coverage))
 
 
 from datetime import datetime
 
-if __name__ == "__main__":
+def tmp():
     time_count = {}
 
     item = ItemCF()
@@ -190,13 +196,13 @@ if __name__ == "__main__":
     item.initData(path)
     b = datetime.now()
     time_count.setdefault("read_file_time", b - a)
-    print((b - a).seconds)
+    print("read_file : ",(b - a).seconds)
 
     a = datetime.now()
     item.count_movie()
     b = datetime.now()
     time_count.setdefault("create_movie_popular", b - a)
-    print((b - a).seconds)
+    print("count_movie" ,(b - a).seconds)
 
     a = datetime.now()
     item.create_movie_movie_matrix()
@@ -211,17 +217,62 @@ if __name__ == "__main__":
     time_count.setdefault("method_calc_movie_sim_1", b - a)
 
     a = datetime.now()
-    item.calc_movie_sim_jacard()
+    # item.calc_movie_sim_jacard()
     b = datetime.now()
     print((b - a).seconds)
     time_count.setdefault("method_calc_movie_sim_2", b - a)
 
-    print(time_count)
-
     print('-'*10)
+    a = datetime.now()
     item.evaluate()
+    b = datetime.now()
+    print((b - a).seconds)
+    time_count.setdefault("method_evaluate", b - a)
+
+    print(time_count)
     for i, score in item.evaluates.items():
         print(i, score)
         # print(i," f1=%4f, precision=%4f, recall=%4f"%(
         #   score.get('f1_score'), score.get("precision"),score.get('recall')
         #))
+
+if __name__ == "__main__":
+    time_count = {}
+
+    item = ItemCF()
+    path = 'ratings.csv'
+
+    # read_file
+    a = datetime.now()
+    item.initData(path)
+    item.count_movie()
+    b = datetime.now()
+    time_count.setdefault("create_movie_popular", b - a)
+    print("count_movie" ,(b - a).seconds)
+
+    a = datetime.now()
+    item.create_movie_movie_matrix()
+    b = datetime.now()
+    time_count.setdefault("create_movie_movie_matrix", b - a)
+    print((b - a).seconds)
+
+    a = datetime.now()
+    item.calc_movie_sim()
+    b = datetime.now()
+    print((b - a).seconds)
+    time_count.setdefault("method_calc_movie_sim_1", b - a)
+
+    a = datetime.now()
+    item.evaluate()
+    b = datetime.now()
+    print("evaluate ",(b - a).seconds)
+    time_count.setdefault("method_evaluate", b - a)
+
+    print(time_count)
+    for i, score in item.evaluates.items():
+        print(i, score)
+        # print(i," f1=%4f, precision=%4f, recall=%4f"%(
+        #   score.get('f1_score'), score.get("precision"),score.get('recall')
+        # ))
+    with closing(shelve.open('tmp.data','c')) as sh:
+        sh['evaluates'] = item.evaluates
