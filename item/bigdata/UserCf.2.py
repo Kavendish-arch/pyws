@@ -187,3 +187,27 @@ if __name__ == '__main__':
     with closing(shelve.open('time1.data','r')) as rf:
         evaluates = rf['time1']
         for i,item in evaluates.items():
+
+            
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+if __name__ == '__main__':
+    f1_score = {}
+    f1_score.setdefault('x',[])
+    f1_score.setdefault('y',[])
+    with closing(shelve.open('time1.data','r')) as rf:
+        evaluates = rf['time1']
+        for i,item in evaluates.items():
+            f1_score['x'].append(i)
+            if item.get('f1_score') == 'error':
+                f1_score['y'].append(0)
+            else:
+                f1_score['y'].append(item.get('f1_score'))
+
+        df = pd.Series(f1_score['y'], index=f1_score['x'])
+        df.plot()
+        plt.savefig('figure.png')
+            
