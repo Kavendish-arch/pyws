@@ -172,42 +172,36 @@ from contextlib import closing
 import shelve
 
 
-def zhushi():
-    rating_file = 'ratings.csv'
-    userCF = UserBasedCF()
-    userCF.get_dataset(rating_file)
-    userCF.calc_user_sim()
-    userCF.evaluate()
-
-    with closing(shelve.open('time1.data', 'c')) as she:
-        she['time1'] = userCF.evaluates
-
-
 if __name__ == '__main__':
-    with closing(shelve.open('time1.data','r')) as rf:
-        evaluates = rf['time1']
-        for i,item in evaluates.items():
+#    rating_file = 'ratings.csv'
+#    userCF = UserBasedCF()
+#    userCF.get_dataset(rating_file)
+#    userCF.calc_user_sim()
+#    userCF.evaluate()
+#
+#    with closing(shelve.open('time1.data', 'c')) as she:
+#        she['time1'] = userCF.evaluates
 
-            
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
+    tmp = {}
+    with closing(shelve.open('time1.data', 'r')) as she:
+        tmp = she['time1']
+    # print(tmp)
+    path = 'result_1.csv'
+    evaluates = {}
+    with open(path,'w') as file:
+        ii = 0
+        for i,item in tmp.items():
+            if ii == 0:
+                for key in item.keys():
+                    file.write(', %s'%key)
+                file.write('\n')
+                ii = 1
+            file.write('%s '%(i))
+            try:
+                tmp_list = tmp.get(i).values()
+            except:
+                continue
+            for value in tmp_list:
+                file.write(' ,%s ' % value)
+            file.write("\n")
 
-
-if __name__ == '__main__':
-    f1_score = {}
-    f1_score.setdefault('x',[])
-    f1_score.setdefault('y',[])
-    with closing(shelve.open('time1.data','r')) as rf:
-        evaluates = rf['time1']
-        for i,item in evaluates.items():
-            f1_score['x'].append(i)
-            if item.get('f1_score') == 'error':
-                f1_score['y'].append(0)
-            else:
-                f1_score['y'].append(item.get('f1_score'))
-
-        df = pd.Series(f1_score['y'], index=f1_score['x'])
-        df.plot()
-        plt.savefig('figure.png')
-            

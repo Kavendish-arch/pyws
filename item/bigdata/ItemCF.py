@@ -236,6 +236,7 @@ def tmp():
         #   score.get('f1_score'), score.get("precision"),score.get('recall')
         #))
 
+
 if __name__ == "__main__":
     time_count = {}
 
@@ -257,7 +258,8 @@ if __name__ == "__main__":
     print((b - a).seconds)
 
     a = datetime.now()
-    item.calc_movie_sim()
+    # item.calc_movie_sim()
+    item.calc_movie_sim_jacard()
     b = datetime.now()
     print((b - a).seconds)
     time_count.setdefault("method_calc_movie_sim_1", b - a)
@@ -269,10 +271,20 @@ if __name__ == "__main__":
     time_count.setdefault("method_evaluate", b - a)
 
     print(time_count)
-    for i, score in item.evaluates.items():
-        print(i, score)
+    ii = 0
+    with open('itemcv.csv', 'a') as rf:
+        for i, score in item.evaluates.items():
+            if ii == 0:
+                for key in score.keys():
+                    rf.write(',%s'%key)
+                ii += 1
+                rf.write('\n')
+            rf.write('%s'%i)
+            for value in score.values():
+                rf.write(',%s'%value)
+            rf.write('\n')
         # print(i," f1=%4f, precision=%4f, recall=%4f"%(
         #   score.get('f1_score'), score.get("precision"),score.get('recall')
         # ))
-    with closing(shelve.open('tmp.data','c')) as sh:
+    with closing(shelve.open('tmp_jacard.data','c')) as sh:
         sh['evaluates'] = item.evaluates
