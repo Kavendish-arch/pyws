@@ -2,12 +2,12 @@
 
 import math
 from operator import itemgetter
-import tool
 import shelve
 from contextlib import closing
+from util import tool as tool
+
 
 class ItemCF(object):
-
     def __init__(self):
         self.trainSet = {}
         self.testSet = {}
@@ -19,6 +19,7 @@ class ItemCF(object):
 
         self.evaluates = {}
 
+        # 推荐相似电影：
         self.n_sim_movie = 20
         self.n_rec_movie = 20
 
@@ -26,31 +27,14 @@ class ItemCF(object):
         # read file
         self.trainSet, self.testSet = tool.get_dataset(path)
 
-    def count_movie(self):
-        # 统计电影的播放次数，movie_movie 矩阵
-        # 统计电影被看的次数
-        for user, movies in self.trainSet.items():
-            for movie in movies:
-                if movie not in self.movie_popular:
-                    self.movie_popular[movie] = 0
-                self.movie_popular[movie] += 1
-        print("Total movie number = %d" % len(self.movie_popular))
-
     def create_movie_movie_matrix(self):
-        # 遍历训练数据，获得用户对有过的行为的物品
-        for user, movies in self.trainSet.items():
-            # 遍历该用户每件物品项
-            for m1 in movies:
-                # 遍历该用户每件物品项
-                for m2 in movies:
-                    # 若该项为当前物品，跳过
-                    if m1 == m2:
-                        continue
-                    self.movie_sim_matrix.setdefault(m1, {})
-                    self.movie_sim_matrix[m1].setdefault(m2, 0)
-                    # 同一个用户，遍历到其他用品则加1
-                    self.movie_sim_matrix[m1][m2] += 1
+        # 建立 movie movie 矩阵
+        # 统计电影的播放次数，movie_movie 矩阵
+        self.movie_popular, self.movie_popular, self.movie_sim_matrix \
+            = tool.build_movie_matrix(self.trainSet)
+        print("Total movie number = %d" % len(self.movie_popular))
         print("Build 同现矩阵co-rated users matrix success!")
+
 
     # 计算电影之间的相似度 相似度算法 AB交集 / 根号下(A*B)
     def calc_movie_sim(self):
