@@ -1,6 +1,5 @@
 # ItemCF 协同过滤算法
-
-import math
+from datetime import datetime
 from operator import itemgetter
 import shelve
 from contextlib import closing
@@ -35,26 +34,9 @@ class ItemCF(object):
         print("Total movie number = %d" % len(self.movie_popular))
         print("Build 同现矩阵co-rated users matrix success!")
 
-
-    # 计算电影之间的相似度 相似度算法 AB交集 / 根号下(A*B)
-    def calc_movie_sim(self):
-        # 计算电影之间的相似性
-        print("Calculating movie similarity matrix ...")
-        for m1, related_movies in self.movie_sim_matrix.items():
-            for m2, count in related_movies.items():
-                # 注意0向量的处理，即某电影的用户数为0
-                if self.movie_popular[m1] == 0 or self.movie_popular[m2] == 0:
-                    self.movie_sim_matrix[m1][m2] = 0
-                else:
-                    self.movie_sim_matrix[m1][m2] \
-                        = count / math.sqrt(self.movie_popular[m1]
-                                            * self.movie_popular[m2])
-        print('Calculate movie similarity matrix success!')
-
-    # 计算电影之间的相似度, jacard 算法 交集/并集
     def calc_movie_sim_jacard(self):
-
-        # 计算电影之间的相似性
+        # 计算电影之间的相似度
+        # 相似性算法：jacard 算法 交集/并集
         print("Calculating movie similarity matrix ...")
         for m1, related_movies in self.movie_sim_matrix.items():
             for m2, count in related_movies.items():
@@ -167,7 +149,6 @@ class ItemCF(object):
             precision, recall, coverage))
 
 
-from datetime import datetime
 
 def tmp():
     time_count = {}
@@ -201,7 +182,7 @@ def tmp():
     time_count.setdefault("method_calc_movie_sim_1", b - a)
 
     a = datetime.now()
-    # item.calc_movie_sim_jacard()
+    item.calc_movie_sim_jacard()
     b = datetime.now()
     print((b - a).seconds)
     time_count.setdefault("method_calc_movie_sim_2", b - a)
@@ -214,11 +195,6 @@ def tmp():
     time_count.setdefault("method_evaluate", b - a)
 
     print(time_count)
-    for i, score in item.evaluates.items():
-        print(i, score)
-        # print(i," f1=%4f, precision=%4f, recall=%4f"%(
-        #   score.get('f1_score'), score.get("precision"),score.get('recall')
-        #))
 
 
 if __name__ == "__main__":
@@ -228,35 +204,25 @@ if __name__ == "__main__":
     path = 'ratings.csv'
 
     # read_file
-    a = datetime.now()
     item.initData(path)
-    item.count_movie()
-    b = datetime.now()
-    time_count.setdefault("create_movie_popular", b - a)
-    print("count_movie" ,(b - a).seconds)
 
-    a = datetime.now()
     item.create_movie_movie_matrix()
-    b = datetime.now()
-    time_count.setdefault("create_movie_movie_matrix", b - a)
-    print((b - a).seconds)
 
     a = datetime.now()
-    # item.calc_movie_sim()
     item.calc_movie_sim_jacard()
     b = datetime.now()
     print((b - a).seconds)
-    time_count.setdefault("method_calc_movie_sim_1", b - a)
+    time_count.setdefault("method_calc_movie_sim_1", (b - a).seconds)
 
     a = datetime.now()
     item.evaluate()
     b = datetime.now()
     print("evaluate ",(b - a).seconds)
-    time_count.setdefault("method_evaluate", b - a)
+    time_count.setdefault("method_evaluate", (b - a).seconds)
 
     print(time_count)
     ii = 0
-    with open('itemcv.csv', 'a') as rf:
+    with open('itemcv_1_1.csv', 'a') as rf:
         for i, score in item.evaluates.items():
             if ii == 0:
                 for key in score.keys():
@@ -267,8 +233,6 @@ if __name__ == "__main__":
             for value in score.values():
                 rf.write(',%s'%value)
             rf.write('\n')
-        # print(i," f1=%4f, precision=%4f, recall=%4f"%(
-        #   score.get('f1_score'), score.get("precision"),score.get('recall')
-        # ))
+
     with closing(shelve.open('tmp_jacard.data','c')) as sh:
         sh['evaluates'] = item.evaluates

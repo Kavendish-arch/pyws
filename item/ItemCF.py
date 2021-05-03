@@ -1,13 +1,12 @@
 # coding = utf-8
 
-# 基于项目的协同过滤推荐算法实现
+# 基于项 的协同过滤推荐算法实现
 import os
-import random
-import math
 from operator import itemgetter
 import shelve
 from contextlib import closing
-from item import Moive
+from user import Moive
+from util import tool
 
 
 class ItemBasedCF(object):
@@ -31,62 +30,15 @@ class ItemBasedCF(object):
         print('Similar movie number = %d' % self.n_sim_movie)
         print('Recommneded movie number = %d' % self.n_rec_movie)
 
-    # 读文件，返回文件的每一行
-    def load_file(self, filename):
-        with open(filename, 'r', encoding='utf-8') as f:
-            for i, line in enumerate(f):
-                if i == 0:
-                    # 去掉文件第一行的title
-                    continue
-                yield line.strip('\r\n')
-        print('Load %s success!' % filename)
+    def initData(self, path):
+        self.trainSet, self.testSet = tool.get_dataset(path)
 
-    # 读文件得到“用户-电影”数据
-    def get_dataset(self, filename, pivot=0.75):
-
-        trainSet_len = 0
-        testSet_len = 0
-        # 加载文件， 按行读取
-        for line in self.load_file(filename):
-            # 读取列属性
-            user, movie, rating, timestamp = line.split(',')
-            # 数据划分测试集合和数据集合 (0,1) < (0,pivot)
-            if random.random() < pivot:
-                self.trainSet.setdefault(user, {})
-                self.trainSet[user][movie] = rating
-                trainSet_len += 1
-            else:
-                self.testSet.setdefault(user, {})
-                self.testSet[user][movie] = rating
-                testSet_len += 1
-        print('Split trainingSet and testSet success!')
-        print('TrainSet = %s' % trainSet_len)
-        print('TestSet = %s' % testSet_len)
-
+    # 建立电影矩阵、 movie movie 矩阵
     def build_movie_matrix(self):
-        for user, movies in self.trainSet.items():
-            for movie in movies:
-                if movie not in self.movie_popular:
-                    self.movie_popular[movie] = 0
-                self.movie_popular[movie] += 1
-        self.movie_count = len(self.movie_popular)
-        print("Total movie number = %d" % self.movie_count)
+        self.movie_popular, self.movie_sim_matrix \
+            = tool.build_movie_matrix(self.trainSet)
 
-        # 遍历训练数据，获得用户对有过的行为的物品
-        for user, movies in self.trainSet.items():
-            # 遍历该用户每件物品项
-            for m1 in movies:
-                # 遍历该用户每件物品项
-                for m2 in movies:
-                    # 若该项为当前物品，跳过
-                    if m1 == m2:
-                        continue
-                    self.movie_sim_matrix.setdefault(m1, {})
-                    self.movie_sim_matrix[m1].setdefault(m2, 0)
-                    # 同一个用户，遍历到其他用品则加1
-                    self.movie_sim_matrix[m1][m2] += 1
-        print("Build 同现矩阵co-rated users matrix success!")
-
+# 变化
     # 计算电影之间的相似度
     def calc_movie_sim(self):
         # 计算电影之间的相似性
@@ -112,10 +64,6 @@ class ItemBasedCF(object):
         rank = {}
         watched_movies = {}
         # 用户user产生过行为的物品，与物品item按相似度从大到小排列，取与物品item相似度最大的k个商品
-        if user in self.trainSet:
-            pass
-        else:
-            print("user other method")
         try:
             watched_movies = self.trainSet[user]
         except KeyError:
@@ -123,11 +71,9 @@ class ItemBasedCF(object):
 
         for movie, rating in watched_movies.items():
             # 遍历与物品item最相似的前k个产品，获得这些物品及相似分数
-            # if movie not in self.movie_sim_matrix:
-                # continue
             for related_movie, w in \
                     sorted(self.movie_sim_matrix[movie].items(),
-                           key=itemgetter(1), reverse=True)[:K]:
+                           key=itemgetter(1), reverse=True):
                 # 若该物品为当前物品，跳过
                 if related_movie in watched_movies:
                     continue

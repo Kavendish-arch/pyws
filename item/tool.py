@@ -20,6 +20,17 @@ def load_file(filename):
     print('Load %s success! count %d records' % (filename,i))
 
 
+    # 读文件，返回文件的每一行
+def load_file_2(filename):
+    with open(filename, 'r', encoding='utf-8') as f:
+        for i, line in enumerate(f):
+            if i == 0:
+                # 去掉文件第一行的title
+                continue
+            yield line.strip('\r\n')
+    print('Load %s success!' % filename)
+
+
 def random_list(len_l, max_limit, func):
     data_r = []
     for _ in range(len_l):
@@ -37,7 +48,6 @@ def random_int(max_limit):
 
 def RMSE(y1,y2):
     '''
-
     :param y1:
     :param y2:
     :return:
@@ -51,6 +61,7 @@ def RMSE(y1,y2):
     tmp = np.sum(np.subtract(y1,y2) ** 2)
     tmp = np.sqrt(tmp/len(y1))
     return tmp
+
 
 def MAE(y1, y2):
     '''

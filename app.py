@@ -1,10 +1,9 @@
-from django.urls import reverse
 from flask import Flask, request, render_template, redirect, url_for
-from item import Moive, ItemCF
-import numpy
-from flask_cors import *
 
-from item.ItemCF import ItemBasedCF
+from item import ItemCF
+from user import Moive
+import os
+from flask_cors import *
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True) #设置跨域
@@ -53,6 +52,19 @@ def get_user_list(user_id=None):
     return {"movie":movie.movie_list}
 
 
+@app.route('/upload', methods=['POST', 'GET'])
+def upload():
+    if request.method == 'POST':
+        f = request.files['file']
+        base_path = os.path.dirname(__file__)  # 当前文件所在路径
+        print(base_path)
+        # upload_path = os.path.join(base_path, 'file\uploads',
+        #                            secure_filename(f.filename))  #注意：没有的文件夹一定要先创建，不然会提示没有该路径
+        # f.save(upload_path)
+        print("ok")
+        return redirect(url_for('upload'))
+    print("error")
+    return render_template('upload.html')
 
 
 # 404 error deal

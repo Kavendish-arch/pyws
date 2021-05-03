@@ -1,7 +1,9 @@
 def loadData():
+
     items={'A':{1:5,2:3},
            'B':{1:3,2:4,3:2},
            'C':{1:2,3:5}}
+
     users={1:{'A':5,'B':3,'C':2},
            2:{'A':3,'B':4},
            3:{'B':2,'C':5}}
@@ -10,13 +12,13 @@ def loadData():
 #***计算物品之间的评分差
 #items:从物品角度，考虑评分
 #users:从用户角度，考虑评分
-def buildAverageDiffs(items,users,averages):
+def buildAverageDiffs(items, users, averages):
     #遍历每条物品-用户评分数据
     for itemId in items:
         for otherItemId in items:
             average=0.0 #物品间的评分偏差均值
             userRatingPairCount=0 #两件物品均评过分的用户数
-            if itemId!=otherItemId: #若无不同的物品项
+            if itemId != otherItemId: #若无不同的物品项
                 for userId in users: #遍历用户-物品评分数
                     userRatings=users[userId] #每条数据为用户对物品的评分
                     #当前物品项在用户的评分数据中，且用户也对其他物品由评分
@@ -42,12 +44,13 @@ def suggestedRating(users,items,averages,targetUserId,targetItemId):
         #物品i和物品targetItemId共同评分的用户数
         ratingCount=userWhoRatedBoth(users,i,targetItemId)
         #分子
-        weightedRatingTotal+=(users[targetUserId][i]-averages[(targetItemId,i)])\
+        weightedRatingTotal += (users[targetUserId][i]-averages[(targetItemId,i)])\
         *ratingCount
         #分母
-        runningRatingCount+=ratingCount
+        runningRatingCount += ratingCount
     #返回预测评分
     return weightedRatingTotal/runningRatingCount
+
 
 # 物品itemId1与itemId2共同有多少用户评分
 def userWhoRatedBoth(users,itemId1,itemId2):
@@ -59,11 +62,12 @@ def userWhoRatedBoth(users,itemId1,itemId2):
             count+=1
     return count
 
+
 if __name__=='__main__':
     items,users=loadData()
     averages={}
     #计算物品之间的评分差
-    buildAverageDiffs(items,users,averages)
+    buildAverageDiffs(items, users, averages)
     #预测评分:用户2对物品C的评分
-    predictRating=suggestedRating(users,items,averages,2,'C')
+    predictRating = suggestedRating(users,items,averages,2,'C')
     print ('Guess the user will rate the score :',predictRating)
