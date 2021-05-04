@@ -112,13 +112,13 @@ def evaluate(aim):
     print('算法评价过程......')
     N = aim.n_rec_movie
     # 准确率和召回率
-    # all_hit 总命中数, rec_count 总推荐数
-    # test_count 总正确数
+    # all_hit 总命中数, rec_count 总推荐数 test_count 总正确数
     all_hit = 0
     rec_count = 0
     test_count = 0
     # 推荐的所有电影集合，算法推荐结果覆盖率
     all_rec_movies = set()
+
     # i, user：user_id
     for i, user in enumerate(aim.trainSet):
         # hit 用户命中率
@@ -126,17 +126,17 @@ def evaluate(aim):
         user_evaluate = {}
 
         # 读取测试集
-        test_moives = aim.testSet.get(user, {})
+        test_movies = aim.testSet.get(user, {})
         # 推荐集合
         rec_movies = recommend(aim, user)
 
         # 数据记录环节
         user_evaluate.setdefault('train_len', len(aim.trainSet.get(user)))
-        user_evaluate.setdefault('test_len', len(test_moives))
+        user_evaluate.setdefault('test_len', len(test_movies))
         user_evaluate.setdefault('rec_len', len(rec_movies))
 
         for movie, w in rec_movies:
-            if movie in test_moives:
+            if movie in test_movies:
                 # 推荐结果命中
                 hit += 1
             # 所有推荐的电影
@@ -148,7 +148,7 @@ def evaluate(aim):
         rec_count += N
 
         x = len(rec_movies)
-        y = len(test_moives)
+        y = len(test_movies)
         # 每个用户的 f1 score
         user_precision = 0 if x == 0 else hit / x
         user_recall = 0 if y == 0 else hit / y
@@ -164,7 +164,7 @@ def evaluate(aim):
         # 存入集合
         aim.evaluates.setdefault(user, user_evaluate)
 
-        test_count += len(test_moives)
+        test_count += len(test_movies)
 
     precision = all_hit / (1.0 * rec_count)
     recall = all_hit / (1.0 * test_count)
@@ -185,8 +185,11 @@ def save_as_csv(item, f_name):
         for i, score in item.evaluates.items():
             # 写入表头
             if ii == 0:
-                for key in score.keys():
-                    rf.write(',%s' % key)
+                try:
+                    for key in score.keys():
+                        rf.write(',%s' % key)
+                except AttributeError:
+                    continue
                 ii += 1
                 rf.write('\n')
             # 写入key

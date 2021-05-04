@@ -3,8 +3,6 @@
 import math
 from datetime import datetime
 from util import tool as tool
-from contextlib import closing
-import shelve
 
 
 class ItemCF(object):
@@ -70,10 +68,10 @@ if __name__ == "__main__":
 
     # read_file
     item.initData(path)
-    # 建立同现矩阵
-    item.create_movie_movie_matrix()
 
     a = datetime.now()
+    # 建立同现矩阵
+    item.create_movie_movie_matrix()
     item.calc_movie_sim()
     b = datetime.now()
     item.evaluates.setdefault("method_calc_movie_sim_2", b - a)
@@ -83,7 +81,7 @@ if __name__ == "__main__":
     b = datetime.now()
     item.evaluates.setdefault("method_evaluate", b - a)
 
-    # tool.save_as_csv(item, 'itemCV_2_3.csv')
+    tool.save_as_csv(item, '..\\csv\\itemCF_2_3.csv')
     tool.save_as_shelve(['evaluates', 'method_calc_movie_sim_2',
                          'method_evaluate'],
-                        item, "itemCV_2_3.data")
+                        item.evaluates, "..\\data\\itemCF_2_3.data")

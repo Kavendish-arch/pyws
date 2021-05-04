@@ -1,9 +1,10 @@
 # coding = utf-8
 
 # 基于用户的协同过滤推荐算法实现
-import random
-
-import math
+from contextlib import closing
+from datetime import datetime
+import shelve
+from util import tool
 from operator import itemgetter
 
 
@@ -27,35 +28,9 @@ class UserBasedCF():
         print('Similar user number = %d' % self.n_sim_user)
         print('Recommneded movie number = %d' % self.n_rec_movie)
 
-
     # 读文件得到“用户-电影”数据 ,分为测试集和训练集
-    def get_dataset(self, filename, pivot=0.75):
-        trainSet_len = 0
-        testSet_len = 0
-        for line in self.load_file(filename):
-            user, movie, rating, timestamp = line.split(',')
-            if random.random() < pivot:
-                self.trainSet.setdefault(user, {})
-                self.trainSet[user][movie] = rating
-                trainSet_len += 1
-            else:
-                self.testSet.setdefault(user, {})
-                self.testSet[user][movie] = rating
-                testSet_len += 1
-        print('Split trainingSet and testSet success!')
-        print('TrainSet = %s' % trainSet_len)
-        print('TestSet = %s' % testSet_len)
-
-
-    # 读文件，返回文件的每一行
-    def load_file(self, filename):
-        with open(filename, 'r') as f:
-            for i, line in enumerate(f):
-                if i == 0:  # 去掉文件第一行的title
-                    continue
-                yield line.strip('\r\n')
-        print('Load %s success!' % filename)
-
+    def init_dataset(self, filename,):
+        self.trainSet, self.testSet = tool.get_dataset(filename)
 
     # 计算用户之间的相似度
     def calc_user_sim(self):
@@ -74,6 +49,7 @@ class UserBasedCF():
         print('Total movie number = %d' % self.movie_count)
 
         print('Build user co-rated movies matrix ...')
+        # user-user 矩阵
         for movie, users in movie_user.items():
             for u in users:
                 for v in users:
@@ -88,9 +64,11 @@ class UserBasedCF():
         print('Calculating user similarity matrix ...')
         for u, related_users in self.user_sim_matrix.items():
             for v, count in related_users.items():
-                self.user_sim_matrix[u][v] = count / math.sqrt(len(self.trainSet[u]) * len(self.trainSet[v]))
-        print('Calculate user similarity matrix success!')
+                self.user_sim_matrix[u][v] = count \
+                    / (len(self.trainSet[u]) + len(self.trainSet[v]) - count)
 
+                # self.user_sim_matrix[u][v] = count / math.sqrt(len(self.trainSet[u]) * len(self.trainSet[v]))
+        print('Calculate user similarity matrix success!')
 
     # 针对目标用户U，找到其最相似的K个用户，产生N个推荐
     def recommend(self, user):
@@ -100,7 +78,8 @@ class UserBasedCF():
         watched_movies = self.trainSet[user]
 
         # v=similar user, wuv=similar factor
-        for v, wuv in sorted(self.user_sim_matrix[user].items(), key=itemgetter(1), reverse=True)[0:K]:
+        for v, wuv in sorted(self.user_sim_matrix[user].items(),
+            key=itemgetter(1), reverse=True)[0:K]:
             for movie in self.trainSet[v]:
                 if movie in watched_movies:
                     continue
@@ -108,49 +87,51 @@ class UserBasedCF():
                 rank[movie] += wuv
         return sorted(rank.items(), key=itemgetter(1), reverse=True)[0:N]
 
-
     # 产生推荐并通过准确率、召回率和覆盖率进行评估
     def evaluate(self):
         print("Evaluation start ...")
         N = self.n_rec_movie
-        # 准确率和召回率
+        # 准确率和召回率 hit 命中数、rec_count 推荐数、test_count 结果数目
         hit = 0
         rec_count = 0
         test_count = 0
-        # 覆盖率
+        # 覆盖率, 总推荐电影清单
         all_rec_movies = set()
 
         for i, user, in enumerate(self.trainSet):
             user_hit = 0
-            user_precision = 0
-            user_recall = 0
             user_evaluate = {}
+
             test_movies = self.testSet.get(user, {})
             rec_movies = self.recommend(user)
-            user_evaluate.setdefault('train_len',len(self.trainSet.get(user)))
-            user_evaluate.setdefault('test_len',len(test_movies))
-            user_evaluate.setdefault('rec_len',len(rec_movies))
+            user_evaluate.setdefault("train_len", len(self.trainSet.get(user)))
+            user_evaluate.setdefault("test_len", len(test_movies))
+            user_evaluate.setdefault("rec_len", len(rec_movies))
 
+            # 准确率
             for movie, w in rec_movies:
                 if movie in test_movies:
                     user_hit += 1
                 all_rec_movies.add(movie)
 
-            user_evaluate.setdefault('hit',user_hit)
-            if len(test_movies) != 0:
-                user_recall = user_hit / len(test_movies)
-            if len(rec_movies) != 0:
-                user_precision = user_hit / len(rec_movies)
+            user_evaluate.setdefault('hit', user_hit)
 
-            if user_recall + user_precision == 0:
-                f1_score = 'error'
-            else:
-                f1_score = 2 * user_precision * user_recall \
-                           / (user_recall + user_precision)
-
+            x = len(rec_movies)
+            y = len(test_movies)
+            # 每个用户的 f1 score
+            user_precision = 0 if x == 0 else user_hit / x
             user_evaluate.setdefault('precision', user_precision)
+
+            user_recall = 0 if y == 0 else user_hit / y
             user_evaluate.setdefault('recall', user_recall)
+
+            # f1 score
+            f1_score = -1 \
+                if user_recall + user_precision == 0 \
+                else 2 * user_precision * user_recall \
+                           / (user_recall + user_precision)
             user_evaluate.setdefault('f1_score', f1_score)
+
             self.evaluates.setdefault(user, user_evaluate)
             # 命中数
             hit += user_hit
@@ -162,26 +143,32 @@ class UserBasedCF():
         precision = hit / (1.0 * rec_count)
         recall = hit / (1.0 * test_count)  #
         coverage = len(all_rec_movies) / (1.0 * self.movie_count)
-        print('precisioin=%.4f\trecall=%.4f\tcoverage=%.4f' % (precision, recall, coverage))
+
         self.evaluates.setdefault('all_hit',hit)
         self.evaluates.setdefault('precision',precision)
         self.evaluates.setdefault('recall', recall)
-
-
-from contextlib import closing
-import shelve
+        self.evaluates.setdefault('rec_count', rec_count)
+        self.evaluates.setdefault('res_count', test_count)
+        self.evaluates.setdefault('coverage', coverage)
 
 
 if __name__ == '__main__':
-#    rating_file = 'ratings.csv'
-#    userCF = UserBasedCF()
-#    userCF.get_dataset(rating_file)
-#    userCF.calc_user_sim()
-#    userCF.evaluate()
-#
-#    with closing(shelve.open('time1.data', 'c')) as she:
-#        she['time1'] = userCF.evaluates
+    rating_file = 'ratings.csv'
+    userCF = UserBasedCF()
+    userCF.init_dataset(rating_file)
+    a = datetime.now()
+    userCF.calc_user_sim()
+    b = datetime.now()
+    userCF.evaluates.setdefault("method_calc_movie_sim_2",
+                        (b-a).seconds)
+    userCF.evaluate()
 
+    tool.save_as_csv(userCF, "..\\csv\\userCF_2_3.csv")
+    tool.save_as_shelve(userCF.evaluates.keys(),
+                        userCF.evaluates , '..\\data\\userCF_2_3.data')
+
+
+def tmp():
     tmp = {}
     with closing(shelve.open('time1.data', 'r')) as she:
         tmp = she['time1']
