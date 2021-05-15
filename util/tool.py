@@ -209,6 +209,21 @@ def save_as_shelve(keys, item, f_name):
             sh[i] = item.get(i)
 
 
+def jacard(movie_popular, movie_sim_matrix):
+    print("Calculating movie similarity matrix ...")
+    for m1, related_movies in movie_sim_matrix.items():
+        for m2, count in related_movies.items():
+            # 注意0向量的处理，即某电影的用户数为0
+            if movie_popular[m1] == 0 or movie_popular[m2] == 0:
+                movie_sim_matrix[m1][m2] = 0
+            else:
+                movie_sim_matrix[m1][m2] = count / (movie_popular[m1] +
+                                                    movie_popular[m2] - count)
+    print('Calculate movie similarity matrix success!')
+    return movie_sim_matrix
+    pass
+
+
 if __name__ == "__main__":
     path = '..\\file\\ratings.csv'
     trainSet, testSet = get_dataset(path)
