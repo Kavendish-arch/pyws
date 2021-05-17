@@ -22,9 +22,11 @@ class ItemCF(object):
 
         self.calc_sim = tool.jacard
 
-    def initData(self, path):
+
+    def initData(self, data_path):
         # read file
-        self.trainSet, self.testSet = tool.get_dataset(path)
+        self.trainSet, self.testSet = tool.get_dataset(data_path)
+
 
     def create_movie_movie_matrix(self):
         """
@@ -91,20 +93,22 @@ class ItemCF(object):
         # 每个用户的 评价
         # 覆盖率
         all_rec_movies = set()
+        confusion_matrix = {}
         # i, user：user_id
         for i, user in enumerate(self.trainSet):
             hit = 0
             # 读取测试集
-            test_moives = self.testSet.get(user, {})
+            test_movies = self.testSet.get(user, {})
             # 推荐集合
             rec_movies = self.recommend(user)
             user_evaluate = {}
             user_evaluate.setdefault('train_len', len(self.trainSet.get(user)))
-            user_evaluate.setdefault('test_len', len(test_moives))
+            user_evaluate.setdefault('test_len', len(test_movies))
             user_evaluate.setdefault('rec_len', len(rec_movies))
 
+            confusion = {}
             for movie, w in rec_movies:
-                if movie in test_moives:
+                if movie in test_movies:
                     # 推荐结果命中
                     hit += 1
                 # 所有推荐的电影
@@ -113,26 +117,25 @@ class ItemCF(object):
             all_hit += hit
             rec_count += N
 
+            confusion.setdefault('tp', hit)
+            confusion.setdefault('fp', N - hit)
+            confusion.setdefault('tn', len(test_movies) - hit)
+            confusion.setdefault('fn', len(self.movie_popular) -
+                                 len(self.trainSet.get(user)))
             # 每个用户的 f1 score
-            if len(rec_movies) == 0:
-                user_precision = 0
-            else:
-                user_precision = hit / len(rec_movies)
-            if len(test_moives) == 0:
-                user_recall = 0
-            else:
-                user_recall = hit / len(test_moives)
-            if user_recall + user_precision == 0:
-                f1_score = 'error'
-            else:
-                f1_score = 2 * user_precision * user_recall \
-                           / (user_precision + user_recall)
-            user_evaluate.setdefault('precision', user_precision)
-            user_evaluate.setdefault('recall', user_recall)
-            user_evaluate.setdefault('f1_score', f1_score)
+            # user_precision = 0 if len(rec_movies) == 0 else hit / len(rec_movies)
+            # user_recall = 0 if len(test_movies) == 0 else hit / len(test_movies)
+            #
+            # f1_score = -1 if user_recall + user_precision == 0\
+            #     else 2 * user_precision * user_recall \
+            #                / (user_precision + user_recall)
+            #
+            # user_evaluate.setdefault('precision', user_precision)
+            # user_evaluate.setdefault('recall', user_recall)
+            # user_evaluate.setdefault('f1_score', f1_score)
             self.evaluates.setdefault(user, user_evaluate)
-
-            test_count += len(test_moives)
+            confusion_matrix.setdefault(user, confusion)
+            test_count += len(test_movies)
 
         precision = hit / (1.0 * rec_count)
         recall = hit / (1.0 * test_count)
@@ -143,88 +146,33 @@ class ItemCF(object):
             precision, recall, coverage))
 
 
-def tmp():
-    time_count = {}
-
-    item = ItemCF()
-    path = 'ratings.csv'
-
-    # read_file
-    a = datetime.now()
-    item.initData(path)
-    b = datetime.now()
-    time_count.setdefault("read_file_time", b - a)
-    print("read_file : ", (b - a).seconds)
-
-    a = datetime.now()
-    item.count_movie()
-    b = datetime.now()
-    time_count.setdefault("create_movie_popular", b - a)
-    print("count_movie", (b - a).seconds)
-
-    a = datetime.now()
-    item.create_movie_movie_matrix()
-    b = datetime.now()
-    time_count.setdefault("create_movie_movie_matrix", b - a)
-    print((b - a).seconds)
-
-    a = datetime.now()
-    item.calc_movie_sim()
-    b = datetime.now()
-    print((b - a).seconds)
-    time_count.setdefault("method_calc_movie_sim_1", b - a)
-
-    a = datetime.now()
-    item.calc_movie_sim_jacard()
-    b = datetime.now()
-    print((b - a).seconds)
-    time_count.setdefault("method_calc_movie_sim_2", b - a)
-
-    print('-' * 10)
-    a = datetime.now()
-    item.evaluate()
-    b = datetime.now()
-    print((b - a).seconds)
-    time_count.setdefault("method_evaluate", b - a)
-
-    print(time_count)
-
-
 if __name__ == "__main__":
-    item = ItemCF()
+    """
+        
+    """
+    base = ItemCF()
+    base.calc_sim = tool.jacard
+
     path = 'ratings.csv'
 
     # read_file
-    item.initData(path)
+    base.initData(path)
 
     a = datetime.now()
-    item.create_movie_movie_matrix()
-    item.calc_movie_sim_jacard()
+    base.create_movie_movie_matrix()
+    base.calc_movie_sim_jacard()
     b = datetime.now()
-    item.evaluates.setdefault("method_calc_movie_sim_1",
+    base.evaluates.setdefault("method_calc_movie_sim_jacard",
                               (b - a).seconds)
 
     a = datetime.now()
-    item.evaluate()
+    base.evaluate()
     b = datetime.now()
     print("evaluate ", (b - a).seconds)
-    item.evaluates.setdefault("method_evaluate", (b - a).seconds)
+    base.evaluates.setdefault("method_evaluate", (b - a).seconds)
 
     ii = 0
-    tool.save_as_csv(item, '..\\csv\\itemCF_1_3.csv')
+    tool.save_as_csv(base, '..\\csv\\itemCF_1_3.csv')
 
-    # with open('itemcv_1_1.csv', 'a') as rf:
-    #     for i, score in item.evaluates.items():
-    #         if ii == 0:
-    #             for key in score.keys():
-    #                 rf.write(',%s'%key)
-    #             ii += 1
-    #             rf.write('\n')
-    #         rf.write('%s'%i)
-    #         for value in score.values():
-    #             rf.write(',%s'%value)
-    #         rf.write('\n')
-    tool.save_as_shelve(item.evaluates.keys(),
-                        item.evaluates, '..\\data\\itemCF_1_3.data')
-    # with closing(shelve.open('tmp_jacard.data','c')) as sh:
-    #     sh['evaluates'] = item.evaluates
+    tool.save_as_shelve(base.evaluates.keys(),
+                        base.evaluates, '..\\data\\itemCF_1_3.data')
