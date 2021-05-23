@@ -1,44 +1,90 @@
+import os
 import random
-import shelve
-from contextlib import closing
-from operator import itemgetter
-import logging
+import csv
 import numpy as np
+# yield 加载文件
 
 
-# read file
 def load_file(filename):
+    """open file load data 使用了csv 模块"""
+    i = -1
     with open(filename, 'r', encoding='utf-8') as f:
-        for i, line in enumerate(f):
+        reader = csv.reader(f)
+        # for i, line in enumerate(f):
+        for row in reader:
+            i += 1
             if i == 0:
                 # 去掉文件第一行的title
                 continue
-            yield line.strip('\r\n')
-    print('Load %s success!' % filename)
+            yield row
+    print('Load %s success! count %d records' % (filename,i))
 
 
-def get_dataset(filename, pivot=0.75):
-    trainSet = {}
-    testSet = {}
-    trainSet_len = 0
-    testSet_len = 0
-    # 加载文件， 按行读取
-    for line in load_file(filename):
-        # 读取列属性
-        user, movie, rating, timestamp = line.split(',')
-        # 数据划分测试集合和数据集合 (0,1) < (0,pivot)
-        if random.random() < pivot:
-            trainSet.setdefault(user, {})
-            trainSet[user][movie] = rating
-            trainSet_len += 1
-        else:
-            testSet.setdefault(user, {})
-            testSet[user][movie] = rating
-            testSet_len += 1
-    print('Split trainingSet and testSet success!')
-    print('TrainSet = %s' % trainSet_len)
-    print('TestSet = %s' % testSet_len)
-    return trainSet, testSet
+    # 读文件，返回文件的每一行
+
+
+def random_list(len_l, max_limit, func):
+    data_r = []
+    for _ in range(len_l):
+        data_r.append(func(max_limit))
+    return data_r
+
+
+def random_num(max_limit):
+    return random.random() * max_limit
+
+
+def random_int(max_limit):
+    return round(random.random() * max_limit)
+
+
+def precision_recall(y1, y2):
+    '''
+    :param y1:  推荐的
+    :param y2:  用户喜欢的
+    :return:    准确率
+    '''
+    hit = []
+    for i in y1:
+        if i in y2:
+            hit.append(i)
+    precision = len(hit) / len(y1)
+    recall = len(hit) / len(y2)
+    return precision, recall
+
+
+def f1_core(y1,y2):
+    p,r = precision_recall(y1,y2)
+    return {'f1':2 * p * r / (p + r), "precision":p,"recall":r}
+
+
+if __name__ == "__main__":
+    path = os.path.abspath(os.curdir) + \
+           "\\bigdata\\ml-latest-small\\movies.csv"
+
+    data = {}
+    for line in load_file(path):
+        movie_id, title = line[0], line[1:]
+        data.setdefault(movie_id, title)
+    # print(data)
+    import doctest
+    # doctest.testmod(verbose=True)
+
+
+def jacard(movie_popular, movie_sim_matrix):
+    print("Calculating movie similarity matrix ...")
+    for m1, related_movies in movie_sim_matrix.items():
+        for m2, count in related_movies.items():
+            # 注意0向量的处理，即某电影的用户数为0
+            if movie_popular[m1] == 0 or movie_popular[m2] == 0:
+                movie_sim_matrix[m1][m2] = 0
+            else:
+                movie_sim_matrix[m1][m2] = count / (movie_popular[m1] +
+                                                    movie_popular[m2] - count)
+    print('Calculate movie similarity matrix success!')
+    return movie_sim_matrix
+
+    
 
 
 # 统计电影的播放次数，movie_movie 矩阵
@@ -179,99 +225,3 @@ def evaluate(aim):
     aim.evaluates.setdefault('recall', recall)
     aim.evaluates.setdefault('coverage', coverage)
 
-
-# 保存为csv
-def save_as_csv(item, f_name):
-    ii = 0
-    with open(f_name, 'a') as rf:
-        for i, score in item.evaluates.items():
-            # 写入表头
-            if ii == 0:
-                try:
-                    for key in score.keys():
-                        rf.write(',%s' % key)
-                except AttributeError:
-                    continue
-                ii += 1
-                rf.write('\n')
-            # 写入key
-            rf.write('%s' % i)
-            try:
-                for value in score.values():
-                    rf.write(',%s' % value)
-                rf.write('\n')
-            except AttributeError:
-                continue
-
-
-# 保存为shelve
-def save_as_shelve(keys, item, f_name):
-    with closing(shelve.open(f_name, 'c')) as sh:
-        for i in keys:
-            sh[i] = item.get(i)
-
-
-def jacard(movie_popular, movie_sim_matrix):
-    print("Calculating movie similarity matrix ...")
-    for m1, related_movies in movie_sim_matrix.items():
-        for m2, count in related_movies.items():
-            # 注意0向量的处理，即某电影的用户数为0
-            if movie_popular[m1] == 0 or movie_popular[m2] == 0:
-                movie_sim_matrix[m1][m2] = 0
-            else:
-                movie_sim_matrix[m1][m2] = count / (movie_popular[m1] +
-                                                    movie_popular[m2] - count)
-    print('Calculate movie similarity matrix success!')
-    return movie_sim_matrix
-    pass
-
-
-class Similarity(object):
-    try:
-        import numpy as np
-    except ImportError:
-        logging.error("import numpy error, please install numpy")
-
-    def eucledian_distance(x, y):
-        """欧氏距离"""
-        return np.sqrt(np.sum(np.power(np.array(x) - np.array(y), 2)))
-
-    def manhattan_distance(x, y):
-        """曼哈顿距离"""
-        # xy = np.abs(x - y)
-        return np.sum(np.abs(np.array(x) - np.array(y)))
-
-    def minkowski_distance(x,y,n):
-        """x, y : 等长度的list"""
-        return np.power(np.sum(np.power(np.array(x) - np.array(y), n)), 1/n)
-
-    def chebyshev_distance(x, y):
-        '''切比雪夫距离'''
-        return np.max(np.abs(np.array(x) - np.array(y)))
-
-    def cosine_similarity(x, y):
-        return np.dot(x, y) / \
-               (np.linalg.norm(x, 2) * np.linalg.norm(y, 2))
-
-    def jaccard_similarity(x, y):
-        a = set.intersection(set(x), set(y))
-        b = set.union(*[set(x), set(y)])
-        return len(a) / len(b)
-
-    def jaccard_distance(x, y):
-        """jaccard 距离 1- jaccard 系数"""
-        a = set.intersection(set(x), set(y))
-        b = set.union(*[set(x), set(y)])
-        return 1 - len(a) / len(b)
-
-    def tanimoto_similarity(x, y):
-        """tanimoto 系数 广义jaccard 系数"""
-        xy = np.dot(x, y)
-        x = np.linalg.norm(x, 2)
-        y = np.linalg.norm(y, 2)
-        return xy / (x + y - xy)
-
-
-if __name__ == "__main__":
-    path = '..\\file\\ratings.csv'
-    trainSet, testSet = get_dataset(path)
