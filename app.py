@@ -1,4 +1,5 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, \
+    render_template, redirect, url_for, send_from_directory
 
 from item import ItemCF
 from user import Moive
@@ -9,14 +10,18 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True) #设置跨域
 
 
-@app.route('/')
-def hello_world():
+@app.route("/")
+def index():
     return render_template("index.html")
 
 
-@app.route('/to_login/<name>', methods=['GET'])
-def login_page(name=None):
-    return render_template("base/login.html")
+@app.route('/login', methods=['POST'])
+def login_page():
+    request.get_data()
+    if False:
+        render_template("login.html")
+    else:
+        return render_template("base/login.html")
 
 
 @app.route('/get/<int:recommend_id>', methods=['GET', 'POST'])
@@ -67,10 +72,20 @@ def upload():
     return render_template('upload.html')
 
 
+@app.route("/txt/<path:path")
+def get_file_txt(path):
+    """
+    获取文件：文本类
+    :param path: 文件路径
+    :return: 文件
+    """
+    return send_from_directory('download', path)
+
 # 404 error deal
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('404.html',error=error)
+    data = range(10)
+    return render_template('404.html', error=error, data=data)
 
 
 if __name__ == '__main__':
