@@ -1,17 +1,22 @@
 from flask import Flask, request, \
     render_template, redirect, url_for, send_from_directory
 
-from item import ItemCF
-from user import Moive
 import os
 from flask_cors import *
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True) #设置跨域
+# 设置跨域
+CORS(app, supports_credentials=True)
 
 
 @app.route("/")
 def index():
+    return render_template("index.html")
+
+
+def valid_login(req):
+    valid_status = req.cookie.get('login_status')
+
     return render_template("index.html")
 
 
@@ -26,6 +31,7 @@ def login_page():
 
 @app.route('/get/<int:recommend_id>', methods=['GET', 'POST'])
 def get_recommend(recommend_id=None):
+    """
     itemCF = ItemCF.ItemBasedCF()
     itemCF.get_dataset('file\\ratings.csv')
     itemCF.build_movie_matrix()
@@ -39,22 +45,23 @@ def get_recommend(recommend_id=None):
     for movie_id, similar in list_item:
         data.append([movie_id, similar, movie.get_title(movie_id)])
     return {"movie":data, "detail":itemCF.evaluate()}
-
+    """
 
 @app.route('/user_list/<int:user_id>')
 def get_user_list(user_id=None):
-    itemCF = ItemCF.ItemBasedCF()
-    path = 'file\\ratings.csv'
-    movie_path = 'file\\movies.csv'
-    itemCF.get_dataset(path)
-    movie = Moive.MovieDetails()
-    movie.get_movie_data(movie_path)
-    # list_item = itemCF.recommend(str(user_id))
-    # data = []
-    # for movie_id, similar in list_item:
-    #     data.append([movie_id, similar, movie.get_title(movie_id)])
-    # return render_template("userlist.html", employee=data)
-    return {"movie":movie.movie_list}
+    # itemCF = ItemCF.ItemBasedCF()
+    # path = 'file\\ratings.csv'
+    # movie_path = 'file\\movies.csv'
+    # itemCF.get_dataset(path)
+    # movie = Moive.MovieDetails()
+    # movie.get_movie_data(movie_path)
+    # # list_item = itemCF.recommend(str(user_id))
+    # # data = []
+    # # for movie_id, similar in list_item:
+    # #     data.append([movie_id, similar, movie.get_title(movie_id)])
+    # # return render_template("userlist.html", employee=data)
+    # return {"movie":movie.movie_list}
+    return
 
 
 @app.route('/upload', methods=['POST', 'GET'])
@@ -72,14 +79,15 @@ def upload():
     return render_template('upload.html')
 
 
-@app.route("/txt/<path:path")
+@app.route("/txt/<path:path>")
 def get_file_txt(path):
     """
     获取文件：文本类
     :param path: 文件路径
     :return: 文件
     """
-    return send_from_directory('download', path)
+    # return send_from_directory('download', path)
+    return "hello"
 
 # 404 error deal
 @app.errorhandler(404)
