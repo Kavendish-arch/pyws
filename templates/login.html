@@ -7,10 +7,12 @@
     <body>
     {{ user }}
 
-    <form action="http://127.0.0.1:5000/forms/peng" method="post">
-        <p>First name: <input type="text" name="fname" /></p>
-        <p>Last name: <input type="text" name="lname" /></p>
-        <input type="submit" value="Submit" />
+    <form action="/login" method="post">
+        <p>账号: <input type="text" name="username" /></p>
+        <p>密码: <input type="password" name="password" /></p>
+        <p>{{ error }}</p>
+        <input type="submit" value="登录" />`
+
     </form>
 
 

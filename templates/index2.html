@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{#    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>#}
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta charset="UTF-8">
+    <meta name="keywords" content=""/>
+    <title> index {{ username }}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/item.css') }}">
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/bootstrap.css') }}"
+          media="all"/>
+
+    <!--infrastructure CSS-->
+    {#    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}" media="all"/>#}
+    {#    <link type="text/css" `rel="stylesheet" href="{{ url_for('static', 'css/chocolat.css') }}" media="screen"/>#}
+    {#    <link type="text/css" rel="stylesheet" href="{{ url_for('static', 'css/popuo-box.css') }}" media="all"/>#}
+
+    <!--local CSS-->
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}" media="all"/>
+
+
+    <!--JS-->
+    {#    <script type="text/javascript" src="{{ url_for('static',"js/jquery-1.11.1.min.js") }}"></script>#}
+    {#    <script type="text/javascript" src="{{ url_for('static',"js/easing.js") }}"></script>#}
+    {#    <script type="text/javascript" src="{{ url_for('static',"js/move-top.js") }}"></script>#}
+    {#    <script type="text/javascript" src="{{ url_for('static',"js/wow.min.js") }}"></script>#}
+    <style>
+        .container ul li {
+            display: inline;
+            line-height: 40px;
+            margin-left: 4em;
+        }
+
+        .container ul li a {
+            font-size: 10px;
+            color: #5bc0de;
+            z-index: 88;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+<p>
+{#    {{ username }}#}
+</p>
+{% include 'title.html' %}
+{% block keng %}{% endblock %}
+<div class="container">
+
+    <table>
+        {% for foo in movie %}
+        <tr id="{{ foo.movieId }}">
+                <td> {{ foo.title }}</td>
+                <td> {{ foo.genres }}</td>
+                <td><a href="{{ foo.imdbId }}">播放路径1</a></td>
+                <td><a href="{{ foo.tmdbId }}">播放路径2</a></td>
+                <td>{{ foo.ratings }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% for foo in movie %}
+        <ul id="{{ foo.movieId }}">
+            <li> {{ foo.title }}</li>
+            <li> {{ foo.genres }}</li>
+            <li><a href="{{ foo.imdbId }}">播放路径1</a></li>
+            <li><a href="{{ foo.tmdbId }}">播放路径2</a></li>
+            <li>{{ foo.ratings }}</li>
+
+{#            <img src="https://www.themoviedb.org/movie/87-indiana-jones-and-the-temple-of-doom#"/>#}
+        </ul>
+    {% endfor %}
+
+</div>
+
+{% block users %}{% endblock %}
+{% include 'footer.html' %}
+</body>
+</html>

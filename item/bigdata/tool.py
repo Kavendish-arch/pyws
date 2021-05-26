@@ -160,8 +160,6 @@ class Similarity(object):
         y1, y2 = np.array(y1), np.array(y2)
         return np.sqrt(np.sum(np.abs(y1 - y2))/len(y1))
 
-    def hell0():
-        print('hello')
 
 if __name__ == "__main__":
     path = '..\\file\\ratings.csv'
