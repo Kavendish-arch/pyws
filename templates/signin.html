@@ -20,10 +20,14 @@
 </head>
 
 <body>
+{% if login_page %}
 {% block login %}
 {% endblock %}
+{% endif %}
+{% if sign_page %}
 {% block sign %}
 {% endblock %}
+{% endif %}
 <!--
 <div class="container">
     <form class="form-signin", action="/login" method="post">

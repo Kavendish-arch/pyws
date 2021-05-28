@@ -144,6 +144,30 @@ def valid_logined(user_name, user_pwd):
         return False
 
 
+def valid_sign(user_dict):
+    return True
+    user_detail = database.user_detail.find_one({
+        'username': "",
+        'pwd': "",
+    },
+        {
+            '_id': 0,
+
+        }
+    )
+    print(user_detail)
+    if user_detail:
+        return {
+            'username': user_detail.get('username'),
+            'login_user': str(user_detail.get("name")),
+            'login_status': 'True',
+            'login_role': 'admin',
+            'login_id': str(user_detail.get('userId')),
+        }
+    else:
+        return False
+
+
 def is_login(req, sess):
     user_name = req.cookies.get('login_user')
     status = req.cookies.get('login_status')

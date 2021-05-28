@@ -1,19 +1,41 @@
 {% extends 'signin.html' %}
 {% block login %}
-<form class="form-signin", action="/login" method="post">
-    <h2 class="form-signin-heading">用户登录</h2>
-    <label for="inputEmail" class="sr-only">用户名</label>
-    <input type="text" id="" class="form-control" name="username"
-           placeholder="user name" required autofocus>
-    <label for="inputPassword" class="sr-only">密码</label>
-    <input type="password" id="inputPassword" class="form-control", name="password"
-           placeholder="Password" required>
-    <div class="checkbox">
-        <label>
-            <input type="checkbox" value="remember-me"> 记住我
-        </label>
-    </div>
-    <button class="btn btn-lg btn-primary btn-block" type="submit"> 登录
-    </button>
-</form>
+    <form class="form-signin" , action="/login" method="post">
+        <h2 class="form-signin-heading">用户登录</h2>
+        <label for="inputEmail" class="sr-only">用户名</label>
+        <input type="text" id="" class="form-control" name="username"
+               placeholder="user name" required autofocus>
+        <label for="inputPassword" class="sr-only">密码</label>
+        <input type="password" id="inputPassword" class="form-control" ,
+               name="password"
+               placeholder="Password" required>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" value="remember-me"> 记住我
+            </label>
+            <label><a href="/sign">没有账号？注册</a></label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit"> 登录
+        </button>
+
+
+        {% if success_sign_info %}
+            <div class="alert alert-success" role="alert">
+                <strong>Well done!</strong> You sign successfully!
+            </div>
+        {% endif %}
+    <!--
+        <div class="alert alert-info" role="alert">
+            <strong>Heads up!</strong> This alert needs your attention, but it's
+            not super important.
+        </div>
+        <div class="alert alert-warning" role="alert">
+            <strong>Warning!</strong> Best check yo self, you're not looking too
+            good.
+        </div>
+        <div class="alert alert-danger" role="alert">
+            <strong>Oh snap!</strong> Change a few things up and try submitting
+            again.
+        </div>-->
+    </form>
 {% endblock %}

@@ -5,7 +5,8 @@ import os
 from flask_cors import *
 import re
 from db.init_data import data as tmp
-from Recommend import get_movies_cache, valid_logined, search_movies, is_login
+from Recommend import get_movies_cache, valid_logined,\
+    search_movies, is_login, valid_sign
 app = Flask(__name__)
 # 设置跨域
 # CORS(app, supports_credentials=True)
@@ -65,31 +66,26 @@ def login():
             return render_template('login.html', error='login failed')
 
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html', login_page=True)
 
 
 @app.route('/sign', methods=['GET', 'POST'])
 def sign():
-    "注册"
+    """
+    注册功能
+    :return:
+    """
     if request.method == 'POST':
-        user_name = request.form['username']
-        user_pwd = request.form['password']
-
-        status = valid_logined(user_name, user_pwd)
+        user_dict = request.form.to_dict()
+        print(user_dict)
+        status = valid_sign(user_dict)
         if status:
-            redirect_to_index = redirect('/')
-            resp = app.make_response(redirect_to_index)
-            for key, value in status.items():
-                resp.set_cookie(key=key, value=value, max_age=3600)
-            session['username'] = status.get('username')
-            session['user_id'] = status.get('login_id')
-            return resp
-
+            return redirect('/login')
         else:
-            return render_template('login.html', error='login failed')
+            return render_template('sign.html', error='login failed')
 
     if request.method == 'GET':
-        return render_template('sign.html')
+        return render_template('sign.html', sign_page=True)
 
 
 @app.route('/search', methods=['GET', 'POST'])
