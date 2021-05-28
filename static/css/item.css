@@ -1,0 +1,21 @@
+.col-xs-6 h2 {
+    font-size: 14px;
+}
+
+.col-xs-6 p {
+    font-size: 14px;
+}
+
+.col-xs-6 p img {
+    font-size: 14px;
+    width: 160px;
+}
+
+.list-group{
+    background-color: #9acfea;
+}
+
+.list-group a{
+    font-size: 10px;
+    background-color: #9acfea;
+}

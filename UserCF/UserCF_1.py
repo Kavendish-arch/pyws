@@ -3,7 +3,6 @@
 # 基于用户的协同过滤推荐算法实现
 from datetime import datetime
 import math
-from util import tool
 from operator import itemgetter
 from db.init_data import database
 
@@ -26,13 +25,13 @@ class UserBasedCF():
         self.movie_count = 0
 
         self.evaluates = {}
-
+        self.result_rec = []
         print('Similar user number = %d' % self.n_sim_user)
         print('Recommneded movie number = %d' % self.n_rec_movie)
 
+
     # 读文件得到“用户-电影”数据 ,分为测试集和训练集
     def init_dataset(self, pivot=0.75):
-
 
         for line in database.ratings.find():
             user, movie, rating = line.get('user'), line.get('movie'),\
@@ -40,7 +39,6 @@ class UserBasedCF():
             self.trainSet.setdefault(user, {})
             self.trainSet[user].setdefault(movie, rating)
             self.trainSet_len += 1
-
 
 
     # 计算用户之间的相似度
@@ -84,18 +82,22 @@ class UserBasedCF():
     def recommend(self, user):
         K = self.n_sim_user
         N = self.n_rec_movie
+        # 推荐结果
         rank = {}
+        # 用户的历史数据集合
         watched_movies = self.trainSet[user]
 
         # v=similar user, wuv=similar factor
         for v, wuv in sorted(self.user_sim_matrix[user].items(),
-            key=itemgetter(1), reverse=True)[0:K]:
+                             key=itemgetter(1), reverse=True)[0:K]:
             for movie in self.trainSet[v]:
                 if movie in watched_movies:
                     continue
                 rank.setdefault(movie, 0)
                 rank[movie] += wuv
-        return sorted(rank.items(), key=itemgetter(1), reverse=True)[0:N]
+        self.result_rec = sorted(rank.items(),
+                                 key=itemgetter(1), reverse=True)[0:N]
+        return self.result_rec
 
     # 产生推荐并通过准确率、召回率和覆盖率进行评估
     def evaluate(self):
@@ -164,16 +166,31 @@ class UserBasedCF():
 
 
 if __name__ == '__main__':
-    rating_file = 'ratings.csv'
     userCF = UserBasedCF()
-    userCF.init_dataset(rating_file)
+
+    userCF.init_dataset()
     a = datetime.now()
     userCF.calc_user_sim()
     b = datetime.now()
-    userCF.evaluates.setdefault("method_calc_movie_sim_1", (b-a).seconds)
-    userCF.evaluate()
 
-    tool.save_as_csv(userCF, "..\\csv\\userCF_1_4.csv")
-    tool.save_as_shelve(userCF.evaluates.keys(),
-        userCF.evaluates , '..\\data\\userCF_1_4.data')
+    rank = userCF.recommend(1)
+    tmp = []
+    for i in rank:
+        a = database.movies.find_one({'movieId': i[0]}, {'_id': 0})
+        b = database.links.find_one({'movieId': i[0]}, {'_id': 0})
+        try:
+            a.update(b)
+            a.setdefault('ratings', i[1])
+        except AttributeError:
+            continue
+
+        tmp.append(a)
+    print({1: tmp})
+
+    # userCF.evaluates.setdefault("method_calc_movie_sim_1", (b-a).seconds)
+    # userCF.evaluate()
+
+    # tool.save_as_csv(userCF, "..\\csv\\userCF_1_4.csv")
+    # tool.save_as_shelve(userCF.evaluates.keys(),
+    #     userCF.evaluates , '..\\data\\userCF_1_4.data')
 

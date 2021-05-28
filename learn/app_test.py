@@ -40,7 +40,7 @@ def red_test():
 
 @app.route('/keng')
 def keng():
-    return render_template("keng.html")
+    return render_template("trash/keng.html")
 
 
 @app.errorhandler(404)

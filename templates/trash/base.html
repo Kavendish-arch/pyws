@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="author" content="">
+      <link href="{% static/bootstrap.min.css %}" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    {% include 'title.html' %}
+    <div class="container">
+
+      <!-- child template -->
+      {% block content %}{% endblock %}
+
+      <!-- errors -->
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}</p>
+      {% endif %}
+
+      <!-- messages -->
+      {% for message in get_flashed_messages() %}
+        {{ message }}
+      {% endfor %}
+    </div>
+    {% include 'footer.html' %}
+  </body>
+</html>

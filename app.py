@@ -3,114 +3,35 @@ from flask import Flask, request, \
 
 import os
 from flask_cors import *
-
+import re
+from db.init_data import data as tmp
+from Recommend import get_movies_cache, valid_logined, search_movies, is_login
 app = Flask(__name__)
 # 设置跨域
-CORS(app, supports_credentials=True)
+# CORS(app, supports_credentials=True)
 app.secret_key = os.urandom(10)
 
 
-def is_login(req, sess):
-    user_name = req.cookies.get('login_user')
-    status = req.cookies.get('login_status')
-    role = req.cookies.get('login_role')
-    user_id = req.cookies.get('login_id')
-    if "username" in sess:
-        if user_name and status and role and user_id:
-            return True
-        else:
-            return False
-    else:
-        return False
-
-
-def valid_logined(user_name, user_pwd):
-    print(user_name, user_pwd)
-    if True:
-        return {
-            'username': 'jack',
-            'login_user': 'jack',
-            'login_status': 'True',
-            'login_role': 'admin',
-            'login_id': '1',
-        }
-    else:
-        return False
+@app.route('/test')
+def show():
+    """
+    测试页面用
+    :return: 待预览页面
+    """
+    return render_template('lunbo.html')
 
 
 # 电影网站主页
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    data = \
-        {1:
-             [{'movieId': 2115,
-               'title': 'Indiana Jones and the Temple of Doom (1984)',
-               'genres': 'Action|Adventure|Fantasy',
-               'imdbId': 'http://www.imdb.com/title/tt87469',
-               'tmdbId': 'https://www.themoviedb.org/movie/87',
-               'ratings': 76.45141047797219},
-              {'movieId': 1196,
-               'title': 'Star Wars: Episode V - The Empire Strikes Back (1980)',
-               'genres': 'Action|Adventure|Sci-Fi',
-               'imdbId': 'http://www.imdb.com/title/tt80684',
-               'tmdbId': 'https://www.themoviedb.org/movie/1891',
-               'ratings': 53.172590388030244},
-              {'movieId': 1923,
-               'title': "There's Something About Mary (1998)",
-               'genres': 'Comedy|Romance',
-               'imdbId': 'http://www.imdb.com/title/tt129387',
-               'tmdbId': 'https://www.themoviedb.org/movie/544',
-               'ratings': 36.032801193125835},
-              {'movieId': 1200,
-               'title': 'Aliens (1986)',
-               'genres': 'Action|Adventure|Horror|Sci-Fi',
-               'imdbId': 'http://www.imdb.com/title/tt90605',
-               'tmdbId': 'https://www.themoviedb.org/movie/679',
-               'ratings': 35.64895451997378},
-              {'movieId': 480,
-               'title': 'Jurassic Park (1993)',
-               'genres': 'Action|Adventure|Sci-Fi|Thriller',
-               'imdbId': 'http://www.imdb.com/title/tt107290',
-               'tmdbId': 'https://www.themoviedb.org/movie/329',
-               'ratings': 34.97835205157789},
-              {'movieId': 1380,
-               'title': 'Grease (1978)',
-               'genres': 'Comedy|Musical|Romance',
-               'imdbId': 'http://www.imdb.com/title/tt77631',
-               'tmdbId': 'https://www.themoviedb.org/movie/621',
-               'ratings': 30.092855674772846},
-              {'movieId': 2028,
-               'title': 'Saving Private Ryan (1998)',
-               'genres': 'Action|Drama|War',
-               'imdbId': 'http://www.imdb.com/title/tt120815',
-               'tmdbId': 'https://www.themoviedb.org/movie/857',
-               'ratings': 30.014776987975168},
-              {'movieId': 1036,
-               'title': 'Die Hard (1988)',
-               'genres': 'Action|Crime|Thriller',
-               'imdbId': 'http://www.imdb.com/title/tt95016',
-               'tmdbId': 'https://www.themoviedb.org/movie/562',
-               'ratings': 29.529508499632268},
-              {'movieId': 47,
-               'title': 'Seven (a.k.a. Se7en) (1995)',
-               'genres': 'Mystery|Thriller',
-               'imdbId': 'http://www.imdb.com/title/tt114369',
-               'tmdbId': 'https://www.themoviedb.org/movie/807',
-               'ratings': 29.282623651730994},
-              {'movieId': 2683,
-               'title': 'Austin Powers: The Spy Who Shagged Me (1999)',
-               'genres': 'Action|Adventure|Comedy',
-               'imdbId': 'http://www.imdb.com/title/tt145660',
-               'tmdbId': 'https://www.themoviedb.org/movie/817',
-               'ratings': 25.84264861921086}
-              ]
-         }
-
     if is_login(request, session):
         user_id = request.cookies.get('login_id')
+        if "user_id" in session:
+            user_id = int(session['user_id'])
+        data = get_movies_cache(user_id)
         return render_template("index2.html",
                                username=request.cookies.get('username'),
-                               movie=data.get(1))
+                               movie=data.get('movies'), top_movie=tmp.get(1))
         # return render_template('index2.html', title=data, movie=data.get(1))
 
     return redirect('login')
@@ -137,7 +58,7 @@ def login():
             for key, value in status.items():
                 resp.set_cookie(key=key, value=value, max_age=3600)
             session['username'] = status.get('username')
-
+            session['user_id'] = status.get('login_id')
             return resp
 
         else:
@@ -147,45 +68,47 @@ def login():
         return render_template('login.html')
 
 
-def valid_login(req):
-    valid_status = req.cookie.get('login_status')
+@app.route('/sign', methods=['GET', 'POST'])
+def sign():
+    "注册"
+    if request.method == 'POST':
+        user_name = request.form['username']
+        user_pwd = request.form['password']
 
-    return render_template("index.html")
+        status = valid_logined(user_name, user_pwd)
+        if status:
+            redirect_to_index = redirect('/')
+            resp = app.make_response(redirect_to_index)
+            for key, value in status.items():
+                resp.set_cookie(key=key, value=value, max_age=3600)
+            session['username'] = status.get('username')
+            session['user_id'] = status.get('login_id')
+            return resp
+
+        else:
+            return render_template('login.html', error='login failed')
+
+    if request.method == 'GET':
+        return render_template('sign.html')
 
 
-@app.route('/get/<int:recommend_id>', methods=['GET', 'POST'])
-def get_recommend(recommend_id=None):
-    """
-    itemCF = ItemCF.ItemBasedCF()
-    itemCF.get_dataset('file\\ratings.csv')
-    itemCF.build_movie_matrix()
-    itemCF.calc_movie_sim()
+@app.route('/search', methods=['GET', 'POST'])
+def search_movie():
+    if request.method == "GET":
+        word = request.args.get("search_word")
+        condition = re.compile('.*{0}.*'.format(word))
+        data = search_movies(condition)
 
-    movie = Moive.MovieDetails()
-    movie.get_movie_data('file\\movies.csv')
+    if request.method == "POST":
+        title_world = request.form.get('title')
+        genre_world = request.form.get('genre')
+        year_world = request.form.get('year')
 
-    data = []
-    list_item = itemCF.recommend(str(recommend_id))
-    for movie_id, similar in list_item:
-        data.append([movie_id, similar, movie.get_title(movie_id)])
-    return {"movie":data, "detail":itemCF.evaluate()}
-    """
+    return render_template('index2.html', movie=list(data))
 
 
 @app.route('/user_list/<int:user_id>')
 def get_user_list(user_id=None):
-    # itemCF = ItemCF.ItemBasedCF()
-    # path = 'file\\ratings.csv'
-    # movie_path = 'file\\movies.csv'
-    # itemCF.get_dataset(path)
-    # movie = Moive.MovieDetails()
-    # movie.get_movie_data(movie_path)
-    # # list_item = itemCF.recommend(str(user_id))
-    # # data = []
-    # # for movie_id, similar in list_item:
-    # #     data.append([movie_id, similar, movie.get_title(movie_id)])
-    # # return render_template("userlist.html", employee=data)
-    # return {"movie":movie.movie_list}
     return
 
 

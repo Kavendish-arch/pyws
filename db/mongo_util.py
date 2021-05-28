@@ -1,7 +1,6 @@
 import pymongo
 import redis
 
-
 ip_db = '192.168.0.32'
 port_db = 6379
 db_pass = '1234'

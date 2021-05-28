@@ -32,6 +32,18 @@ body a:hover {
 	text-decoration: none;
 }
 
+.container ul li {
+	display: inline;
+	line-height: 40px;
+	margin-left: 4em;
+}
+.container ul li a {
+	font-size: 10px;
+	color: #5bc0de;
+	z-index: 88;
+	width: auto;
+}
+
 .top-nav {
 	padding-top: 3em;
 	background-color: #79A7B5;

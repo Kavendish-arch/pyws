@@ -1,0 +1,13 @@
+{% extends "index2.html" %}
+{% block users %}
+
+    <ul>
+    {% for user in employee %}
+        <li>
+            <b>Movie Id :</b>{{ user[0] }}
+            <b>Similarity:</b>{{ user[1] }}
+            <b>Movie Name:</b>{{ user[2] }}
+        </li>
+    </ul>
+    {% endfor %}
+{% endblock %}

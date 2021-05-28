@@ -28,6 +28,7 @@ class ItemBasedCF(object):
         self.movie_popular = {}
         self.movie_count = 0
 
+        self.result_rec = []
         print('Similar movie number = %d' % self.n_sim_movie)
         print('Recommneded movie number = %d' % self.n_rec_movie)
 
@@ -106,7 +107,9 @@ class ItemBasedCF(object):
                 # 通过与其相似物品对物品related_movie的偏好值相乘并相加。
                 # 排名的依据—— > 推荐电影与该已看电影的相似度(累计) * 用户对已看电影的评分
                 rank[related_movie] += w * float(rating)
-        return sorted(rank.items(), key=itemgetter(1), reverse=True)[:N]
+        self.result_rec = sorted(rank.items(), key=itemgetter(1), reverse=True)[:N]
+
+        return self.result_rec
 
     # 产生推荐并通过准确率、召回率和覆盖率进行评估
     def evaluate(self):
