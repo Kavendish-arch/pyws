@@ -1,26 +1,26 @@
 # coding = utf-8
-from db.init_data import database
-
-db_ratings = database.ratings
 # 基于项目的协同过滤推荐算法实现
-import os
-import random
+"""
+    投入项目使用的模块
+    数据库获取训练数据
+    添加缓存数据库
+"""
+from db.init_data import database
 import math
 from operator import itemgetter
-import shelve
-from contextlib import closing
+
+db_ratings = database.ratings
 
 
 class ItemBasedCF(object):
     # 初始化参数 构造方法
     def __init__(self):
-        # 找到相似的20部电影，为目标用户推荐10部电影
-        self.n_sim_movie = 20
-        self.n_rec_movie = 10
+        # 找到相似的40部电影，为目标用户推荐20部电影
+        self.n_sim_movie = 40
+        self.n_rec_movie = 20
 
         # 将数据集划分为训练集和测试集
         self.trainSet = {}
-        self.testSet = {}
         self.trainSet_len = 0
 
         # 用户相似度 矩阵
@@ -29,8 +29,8 @@ class ItemBasedCF(object):
         self.movie_count = 0
 
         self.result_rec = []
-        print('Similar movie number = %d' % self.n_sim_movie)
-        print('Recommneded movie number = %d' % self.n_rec_movie)
+        # print('Similar movie number = %d' % self.n_sim_movie)
+        # print('Recommneded movie number = %d' % self.n_rec_movie)
 
     # 读文件得到“用户-电影”数据
     def get_dataset(self, pivot=0.75):
@@ -39,15 +39,17 @@ class ItemBasedCF(object):
             # 读取列属性
             user, movie, rating \
                 = line.get('user'), line.get('movie'), line.get('rating')
-            # 生产环境 不用划分
             self.trainSet.setdefault(user, {})
             self.trainSet[user][movie] = rating
             self.trainSet_len += 1
-        print('Split trainingSet and testSet success!')
+        # print('Split trainingSet and testSet success!')
 
 
-    # 计算电影之间的相似度
     def calc_movie_sim(self):
+        """
+        # 计算电影之间的相似度
+        :return: 相似性矩阵
+        """
         for user, movies in self.trainSet.items():
             for movie in movies:
                 if movie not in self.movie_popular:
@@ -83,9 +85,13 @@ class ItemBasedCF(object):
                         self.movie_popular[m1] * self.movie_popular[m2])
         print('Calculate movie similarity matrix success!')
 
-    # 针对目标用户U，找到K部相似的电影，并推荐其N部电影，
-    # 用户未产生过行为的物品
     def recommend(self, user):
+        """
+        # 针对目标用户U，找到K部相似的电影，并推荐其N部电影，
+        # 用户未产生过行为的物品
+        :param user:  用户 - id
+        :return: 推荐电影列表
+        """
         K = self.n_sim_movie
         N = self.n_rec_movie
         # 用户user对物品的偏好值
@@ -139,39 +145,30 @@ class ItemBasedCF(object):
         print('precisioin=%.4f\trecall=%.4f\tcoverage=%.4f' % (
             precision, recall, coverage))
 
-    def save_data(self):
-        with closing(shelve.open('temp_data', 'c')) as shelf:
-            shelf['trainSet'] = self.trainSet
-            shelf['testSet'] = self.testSet
-            shelf['movie_popular'] = self.movie_popular
-            shelf['movie_sim_matrix'] = self.movie_sim_matrix
-            shelf['count'] = self.movie_count
 
-    def read_data(self):
-        with closing(shelve.open('temp_data', 'r')) as shelf:
-            self.trainSet = shelf['trainSet']
-            self.testSet = shelf['testSet']
-            self.movie_popular = shelf['movie_popular']
-            self.movie_sim_matrix = shelf['movie_sim_matrix']
-            self.movie_count = shelf['count']
 
-    # return list of users
-    def get_user_List(self):
-        name = []
-        for user, _ in itemCF.trainSet.items():
-            print(user)
-            name.append(user)
-        return name
 
 
 
 if __name__ == '__main__':
     movie_handler = database.movies
     link_handler = database.links
+    movie_sim_cache = database.mvoie_sim_cache
+
+
     itemCF = ItemBasedCF()
     itemCF.get_dataset()
 
     itemCF.calc_movie_sim()
+
+    movie_sim_cache_record = {}
+
+    # for k,v in itemCF.movie_sim_matrix.items():
+    #     movie_sim_cache_record
+        # print(k, "电影评分", v)
+
+
+    """ 
     user_rec_cache_list = []
 
     rec = itemCF.recommend(1)
@@ -192,4 +189,4 @@ if __name__ == '__main__':
     print(user_rec_cache_list)
 
     # database.user_rec_cache.insert_one({1:user_rec_cache_list})
-
+    """

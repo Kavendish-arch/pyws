@@ -1,0 +1,28 @@
+{% extends 'dashboard.html' %}
+{% block user_record_detail %}
+    <h2 class="sub-header">Section title</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>用户名</th>
+                <th>电影名</th>
+                <th>电影类型</th>
+                <th>评分</th>
+{#                <th>#</th>#}
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in data %}
+                <tr>
+                    <td name="movieId">{{ item.user }}</td>
+                    <td>{{ item.movie.title }}</td>
+                    <td>{{ item.movie.genres }}</td>
+                    <td>{{ item.rating }}</td>
+{#                    <td>#</td>#}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

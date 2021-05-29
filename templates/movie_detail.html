@@ -1,0 +1,31 @@
+{% extends 'dashboard.html' %}
+{% block movie_detail %}
+<h2 class="sub-header">Section title</h2>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>电影编号</th>
+            <th>电影名（时间）</th>
+            <th>类型</th>
+            <th>观看人数</th>
+            <th>链接</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in data %}
+            <tr>
+                <td name="movieId">{{ item.movieId }}</td>
+                <td>{{ item.title }}</td>
+                <td>{{ item.genres }}</td>
+                <td>{{ item.movie_total }}</td>
+                <td>
+                    <a href=" {{ item.movie_link.imdbId }}">链接</a>
+                    <a href=" {{ item.movie_link.tmdbId }}">链接</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

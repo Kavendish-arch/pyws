@@ -1,0 +1,28 @@
+{% extends 'dashboard.html' %}
+{% block user_detail %}
+    <h2 class="sub-header">Section title</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>用户编号</th>
+                <th>用户姓名</th>
+                <th>用户昵称</th>
+                <th>观看人数</th>
+                <th>链接</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in data %}
+                <tr>
+                    <td name="userId">{{ item.userId }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.username }}</td>
+                    <td>#</td>
+                    <td>#</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

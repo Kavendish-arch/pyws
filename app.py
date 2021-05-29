@@ -6,7 +6,9 @@ from flask_cors import *
 import re
 from db.init_data import data as tmp
 from Recommend import get_movies_cache, valid_logined,\
-    search_movies, is_login, valid_sign
+    search_movies, is_login, valid_sign, search_movies_extention
+from count import get_user_detail, movie_detail, movie_record, user_record
+
 app = Flask(__name__)
 # 设置跨域
 # CORS(app, supports_credentials=True)
@@ -19,7 +21,7 @@ def show():
     测试页面用
     :return: 待预览页面
     """
-    return render_template('lunbo.html')
+    return render_template('dashboard.html', data=None)
 
 
 # 电影网站主页
@@ -32,7 +34,8 @@ def index():
         data = get_movies_cache(user_id)
         return render_template("index2.html",
                                username=request.cookies.get('username'),
-                               movie=data.get('movies'), top_movie=tmp.get(1))
+                               movie=data.get('movies'), top_movie=tmp.get(1),
+                               )
         # return render_template('index2.html', title=data, movie=data.get(1))
 
     return redirect('login')
@@ -99,8 +102,39 @@ def search_movie():
         title_world = request.form.get('title')
         genre_world = request.form.get('genre')
         year_world = request.form.get('year')
-
+        data = search_movies_extention(title=title_world,
+                                       genre=genre_world, year=year_world)
     return render_template('index2.html', movie=list(data))
+
+
+@app.route('/get/<string:d_type>', methods=['GET', "POST"])
+def get_detail(d_type):
+    if "u_record" == d_type:
+        """
+        用户历史记录
+        """
+        return render_template("user_record_detail.html"
+                               , data=user_record(1), user_record_type=True)
+        pass
+
+    if "user" == d_type:
+        """
+        用户信息
+        """
+        return render_template("user_detail.html", data=get_user_detail(), user_type=True)
+
+    if "movie" == d_type:
+        """
+        用户电影信息
+        """
+        return render_template("movie_detail.html", data=movie_detail(), movie_type=True)
+
+    if "movie_record" == d_type:
+        """
+        用户电影播放记录
+        """
+        pass
+
 
 
 @app.route('/user_list/<int:user_id>')

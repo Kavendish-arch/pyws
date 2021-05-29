@@ -1,3 +1,4 @@
+import csv
 import pymongo
 
 mongo_ip = "192.168.43.184"
@@ -8,8 +9,6 @@ uri = "mongodb://{0}:{1}@{2}:{3}".format(mongo_user, mongo_pwd,
                                          mongo_ip, mongo_port)
 
 uri = "mongodb://root:root@192.168.43.184:27017"
-# train_handler = pymongo.MongoClient().chapter_4.trainSet
-# handler = pymongo.MongoClient(uri).chapter_4.ratings
 database = pymongo.MongoClient(uri).chapter_4
 
 
@@ -47,6 +46,20 @@ def init_ratings(filename, pivot=0.75):
 
 # 初始化电影 数据
 def init_movie(filename):
+    list_d = []
+    for movieId, title, genres in read_csv(filename):
+        try:
+            list_d.append({
+                'movieId': int(movieId),
+                'title': title,
+                'genres': genres,
+            })
+        except ValueError:
+            continue
+
+    database.movies.insert_many(list_d)
+
+    """
     movieLen = []
     # 加载文件， 按行读取
     for line in load_file(filename):
@@ -57,6 +70,14 @@ def init_movie(filename):
             continue
         movieLen.append({'movieId': movieId, 'title': title, 'genres': genres})
     database.movies.insert_many(movieLen)
+    """
+
+
+def read_csv(filename):
+    with open(filename, 'r', encoding='utf8') as csvfile:
+        head = csv.reader(csvfile)
+        for i in head:
+            yield i
 
 
 # 初始化 电影links 数据
@@ -70,8 +91,8 @@ def init_link(filename):
             print(line)
         link_list.append({
             'movieId': movieId,
-            'imdbId': imdbId,
-            'tmdbId': tmdbId,
+            'imdbId': "http://www.imdb.com/title/tt{}".format(imdbId),
+            'tmdbId': "https://www.themoviedb.org/movie/{0}".format(tmdbId),
         })
     database.links.insert_many(link_list)
 
@@ -113,7 +134,7 @@ if __name__ == '__main__':
     # init_user('ratings.csv')
     # print(list(zip([1,2],[3,4])))
     # init_movie('movies.csv')
-    # init_ratings('ratings.csv')
+    init_ratings('ratings.csv')
     # init_link('links.csv')
     init_user('user_detail.csv')
     # k = 0

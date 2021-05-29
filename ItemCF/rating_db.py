@@ -1,10 +1,10 @@
 from pymongo import MongoClient
-from db.init_data import handler
+from db.init_data import database
 
 
 def query_info():
-    return handler.find()
-
+    # return handler.find()
+    pass
 
 class DataBaseManager(object):
     def __init__(self):
