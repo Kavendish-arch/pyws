@@ -1,5 +1,7 @@
 import csv
 import pymongo
+import redis
+
 
 mongo_ip = "192.168.43.184"
 mongo_port = 27017
@@ -7,6 +9,7 @@ mongo_user = 'root'
 mongo_pwd = 'root'
 uri = "mongodb://{0}:{1}@{2}:{3}".format(mongo_user, mongo_pwd,
                                          mongo_ip, mongo_port)
+
 
 uri = "mongodb://root:root@192.168.43.184:27017"
 database = pymongo.MongoClient(uri).chapter_4

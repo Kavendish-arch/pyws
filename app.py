@@ -107,8 +107,15 @@ def search_movie():
     return render_template('index2.html', movie=list(data))
 
 
+@app.route('/update/<string:d_type>', methods=['GET', "POST"])
+def update_detail(d_type):
+    # TODO update 操作 修改数据
+    pass
+
+
 @app.route('/get/<string:d_type>', methods=['GET', "POST"])
 def get_detail(d_type):
+    # TODO 创建 数据获取
     if "u_record" == d_type:
         """
         用户历史记录
@@ -142,8 +149,14 @@ def get_user_list(user_id=None):
     return
 
 
+# TODO 获取相似性数据
+def similarity():
+    pass
+
+
 @app.route('/upload', methods=['POST', 'GET'])
 def upload():
+    # TODO 上传文件进行数据分析
     if request.method == 'POST':
         f = request.files['file']
         base_path = os.path.dirname(__file__)  # 当前文件所在路径

@@ -201,6 +201,17 @@ def is_login(req, sess):
 
 
 if __name__ == "__main__":
+
+    condition = re.compile(".*Com.*")
+    # data = search_movies(condition)
+    data = database.movies.find({
+        "$or": [
+            {'title': condition},
+            {'genres': condition}
+        ]
+    })
+
+    print(data)
     '''
     查找用户测试
     data = database.user_id.find({}, {'_id': 0})
@@ -242,4 +253,4 @@ if __name__ == "__main__":
     """
 
     # 存储相似矩阵
-    init_movies_sim()
+    # init_movies_sim()
