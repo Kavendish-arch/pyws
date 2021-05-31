@@ -44,8 +44,11 @@
                 <li><a href="#">Profile</a></li>
                 <li><a href="#">Help</a></li>
             </ul>
-            <form class="navbar-form navbar-right">
-                <input type="text" class="form-control" placeholder="Search...">
+            <form class="navbar-form navbar-right" id="search_title"
+                  action="{{ url_for('get_detail', d_type='u_record') }}" method="get">
+                <input type="text" id="user_search_id" name="user_id"
+                       class="form-control" placeholder="搜索用户id">
+                <button type="submit" id="sousuo" class="btn">搜索</button>
             </form>
         </div>
     </div>
@@ -55,11 +58,11 @@
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a>
-                </li>
-                <li><a href="#">Reports</a></li>
-                <li><a href="#">Analytics</a></li>
-                <li><a href="#">Export</a></li>
+{#                <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a>#}
+{#                </li>#}
+{#                <li><a href="#">Reports</a></li>#}
+{#                <li><a href="#">Analytics</a></li>#}
+{#                <li><a href="#">Export</a></li>#}
             </ul>
             <ul class="nav nav-sidebar">
                 <li>
@@ -68,49 +71,52 @@
                 <li>
                     <a href="{{ url_for('get_detail', d_type="user") }}">用户信息</a>
                 </li>
-                <li><a href="{{ url_for('get_detail', d_type='u_record') }}">用户播放记录</a></li>
-                <li><a href="">Another nav item</a></li>
-                <li><a href="">More navigation</a></li>
+                <li><a href="{{ url_for('get_detail', d_type='u_record') }}">用户播放记录</a>
+                </li>
+                <li><a href="{{ url_for('get_detail', d_type='movie_url') }}">电影资源管理</a>
+                </li>
+                <li><a href="{{ url_for('get_detail', d_type='movie_total') }}">电影热度统计</a>
+                </li>
             </ul>
             <ul class="nav nav-sidebar">
-                <li><a href="">Nav item again</a></li>
-                <li><a href="">One more nav</a></li>
-                <li><a href="">Another nav item</a></li>
+{#                <li><a href="">Nav item again</a></li>#}
+{#                <li><a href="">One more nav</a></li>#}
+{#                <li><a href="">Another nav item</a></li>#}
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <h1 class="page-header">Dashboard</h1>
+{#            <h1 class="page-header">Dashboard</h1>#}
 
-            <div class="row placeholders">
-                <div class="col-xs-6 col-sm-3 placeholder">
-                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
-                         width="200" height="200" class="img-responsive"
-                         alt="Generic placeholder thumbnail">
-                    <h4>Label</h4>
-                    <span class="text-muted">Something else</span>
-                </div>
-                <div class="col-xs-6 col-sm-3 placeholder">
-                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
-                         width="200" height="200" class="img-responsive"
-                         alt="Generic placeholder thumbnail">
-                    <h4>Label</h4>
-                    <span class="text-muted">Something else</span>
-                </div>
-                <div class="col-xs-6 col-sm-3 placeholder">
-                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
-                         width="200" height="200" class="img-responsive"
-                         alt="Generic placeholder thumbnail">
-                    <h4>Label</h4>
-                    <span class="text-muted">Something else</span>
-                </div>
-                <div class="col-xs-6 col-sm-3 placeholder">
-                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
-                         width="200" height="200" class="img-responsive"
-                         alt="Generic placeholder thumbnail">
-                    <h4>Label</h4>
-                    <span class="text-muted">Something else</span>
-                </div>
-            </div>
+{#            <div class="row placeholders">#}
+{#                <div class="col-xs-6 col-sm-3 placeholder">#}
+{#                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="#}
+{#                         width="200" height="200" class="img-responsive"#}
+{#                         alt="Generic placeholder thumbnail">#}
+{#                    <h4>Label</h4>#}
+{#                    <span class="text-muted">Something else</span>#}
+{#                </div>#}
+{#                <div class="col-xs-6 col-sm-3 placeholder">#}
+{#                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="#}
+{#                         width="200" height="200" class="img-responsive"#}
+{#                         alt="Generic placeholder thumbnail">#}
+{#                    <h4>Label</h4>#}
+{#                    <span class="text-muted">Something else</span>#}
+{#                </div>#}
+{#                <div class="col-xs-6 col-sm-3 placeholder">#}
+{#                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="#}
+{#                         width="200" height="200" class="img-responsive"#}
+{#                         alt="Generic placeholder thumbnail">#}
+{#                    <h4>Label</h4>#}
+{#                    <span class="text-muted">Something else</span>#}
+{#                </div>#}
+{#                <div class="col-xs-6 col-sm-3 placeholder">#}
+{#                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="#}
+{#                         width="200" height="200" class="img-responsive"#}
+{#                         alt="Generic placeholder thumbnail">#}
+{#                    <h4>Label</h4>#}
+{#                    <span class="text-muted">Something else</span>#}
+{#                </div>#}
+{#            </div>#}
             {% if movie_type %}
                 {% block movie_detail %}
                 {% endblock %}
@@ -123,17 +129,54 @@
                 {% block user_record_detail %}
                 {% endblock %}
             {% endif %}
+            {% if movie_url_type %}
+                {% block movie_url_edit %}
+                {% endblock %}
+            {% endif %}
+            <p>
+                <button type="button" class="btn btn-info" id="last_page_to">
+                    上一页
+                </button>
+                <button value="{{ page_info.min_page_index }}"
+                        class="btn btn-default"
+                        id="min_page_index">{{ page_info.min_page_index }}</button>
+
+                <input name="to_page" id="page_id"
+                       value="{{ page_info.page_id }}" type="number"
+                       class="btn btn-default">
+
+                <button type="button" class="btn btn-default" id="to_page"
+                        value="{{ page_info.count }}">跳转
+                </button>
+                <button value="{{ page_info.max_page_index }}"
+                        class="btn btn-default"
+                        id="max_page_index">{{ page_info.max_page_index }}</button>
+                <button type="button" class="btn btn-info" id="next_page_to">
+                    下一页
+                </button>
+                <a href="{{ url_for('get_detail', d_type='movie') }}"></a>
+            </p>
         </div>
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="{{ url_for('static',filename='js/jquery-3.3.1.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/page_util.js') }}"></script>
+        <script>
+            page_util(get_url_path());
+
+            $('#sousuo').click(function () {
+                var userId = String($('#user_search_id').val());
+                var search_url = get_url_path() + "?user_search_id=" + userId + "&time=1212";
+                console.log(search_url);
+            })
+        </script>
     </div>
 </div>
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-<script src="../../dist/js/bootstrap.min.js"></script>
-<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-<script src="../../assets/js/vendor/holder.min.js"></script>
+{#<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>#}
+{#<script src="../../dist/js/bootstrap.min.js"></script>#}
+{#<!-- Just to make our placeholder images work. Don't actually copy the next line! -->#}
+{#<script src="../../assets/js/vendor/holder.min.js"></script>#}
 </body>
 </html>

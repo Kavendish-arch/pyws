@@ -1,0 +1,30 @@
+{% extends 'dashboard.html' %}
+{% block movie_url_edit %}
+<h2 class="sub-header">电影链接资源管理</h2>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>编号</th>
+            <th>电影名（时间）</th>
+            <th>类型</th>
+            <th>播放链接</th>
+            <th>详情链接</th>
+            <th>修改</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in data %}
+            <tr>
+                <td name="movieId">{{ item.movieId }}</td>
+                <td>{{ item.title }}</td>
+                <td>{{ item.genres }}</td>
+                <td id=" {{ item.movie_link.imdbId }}"><p>{{ item.movie_link.imdbId }}</p></td>
+                <td id=" {{ item.movie_link.tmdbId }}"><p>{{ item.movie_link.tmdbId }}</p></td>
+                <td> <button>edit</button></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

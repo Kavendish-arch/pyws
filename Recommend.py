@@ -3,6 +3,8 @@ from ItemCF.ItemCF_db import ItemBasedCF
 from UserCF.UserCF_1 import UserBasedCF
 from threading import Thread
 import re
+from config import get_md5
+from db.redisUtil import client
 
 
 def init_movies_sim():
@@ -141,15 +143,19 @@ def search_movies_extention(title, genre, year):
 
 def valid_logined(user_name, user_pwd):
     user_detail = database.user_detail.find_one({
-        'username':user_name,
-        'pwd':user_pwd
+        'username': user_name,
+        'pwd': user_pwd
     },
         {
             '_id': 0,
 
         }
     )
+    md5_pwd = get_md5(user_detail.get('username'), user_detail.get('pwd'))
+    client.set(md5_pwd, user_detail.get('username'))
     print(user_detail)
+
+
     if user_detail:
         return {
             'username': user_detail.get('username'),
@@ -157,6 +163,7 @@ def valid_logined(user_name, user_pwd):
             'login_status': 'True',
             'login_role': 'admin',
             'login_id': str(user_detail.get('userId')),
+            'token_pwd': str(md5_pwd)
         }
     else:
         return False
@@ -212,8 +219,7 @@ if __name__ == "__main__":
     })
 
     print(data)
-    '''
-    查找用户测试
+    # 查找用户测试
     data = database.user_id.find({}, {'_id': 0})
     j = []
     for i in data:
@@ -222,18 +228,18 @@ if __name__ == "__main__":
     
     users = j
     for user in users:
-        if user < 78:
+        if user < 8:
             continue
         try:
             pass
-            推荐 电影
-            # data = get_movies(user)
-            # database.user_rec_cache.insert_one(data).inserted_id
+            # 推荐 电影
+            data = get_movies(user)
+            database.user_rec_cache.insert_one(data).inserted_id
         except BaseException:
             continue
 
     print(get_movies_cache(4))
-    
+    '''
     用户具体信息
     user_one = database.user_detail.find_one({})
     print(database.user_detail.find_one({}))

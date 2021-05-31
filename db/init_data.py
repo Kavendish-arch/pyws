@@ -137,9 +137,9 @@ if __name__ == '__main__':
     # init_user('ratings.csv')
     # print(list(zip([1,2],[3,4])))
     # init_movie('movies.csv')
-    init_ratings('ratings.csv')
-    # init_link('links.csv')
-    init_user('user_detail.csv')
+    # init_ratings('ratings.csv')
+    init_link('links.csv')
+    # init_user('user_detail.csv')
     # k = 0
     # with open('user_detail.csv') as f:
     #     line = f.readline()
