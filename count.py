@@ -3,16 +3,12 @@ from logging import Logger
 
 
 def user_record(user_id, page=0, count=20):
-    """
-    获取播放记录 用户端
-    :return: 播放记录
-    """
-    # 所有的播放记录
+    # 获取用户的播放记录
     base_data = database.ratings.find({
         'user': user_id
     }).skip(page * count).limit(count)
 
-
+    # 播放记录拓展，
     extent_data = []
     for i in base_data:
         tmp = i.copy()
@@ -38,7 +34,7 @@ def movie_record():
     pass
 
 
-def count_user_table(db, page,count, user):
+def count_user_table(db, page, count, user):
     total = database[db].find({
         'user': user,
     }).count()
@@ -53,12 +49,16 @@ def count_user_table(db, page,count, user):
         'max_page_index': max_page_index,
         'page_id': page,
         'count': count,
-        }
+    }
     return page_info
 
 
-def count_table(db, page, count):
-    total = database[db].count()
+def count_table(db, page, count, condition=None):
+    if condition:
+        total = database[db].find(condition).count()
+    else:
+        total = database[db].find({}).count()
+
     if total % count == 0:
         max_page_index = total / count
     else:
@@ -75,29 +75,21 @@ def count_table(db, page, count):
 
 def movie_detail(page, count):
     """
-    电影信息管理
-    :return:
+    获取电影信息
     """
     # 电影播放次数 {{ "movieId':total }}
     movie_total = {}
-    # 电影的链接管理{
-    #   {
-    #   'movieId': 1,
-    #   'imdbId': 'http://www.imdb.com/title/tt114709',
-    #   'tmdbId': 'https://www.themoviedb.org/movie/862'
-    #   }
-    # }
-    movie_link = {}
-
-    # 最后展示的电影记录
-    movie_details_record = []
-
     for data in database.ratings.find({}):
         movie_total.setdefault(data.get('movie'), 0)
         movie_total[data.get('movie')] += 1
 
+    # 电影链接
+    movie_link = {}
+    # 最后展示的电影记录
+    movie_details_record = []
+    # 统计电影
 
-    for i in database.links.find({
+    for i in database.link2.find({
 
     }, {
         '_id': 0
@@ -110,12 +102,14 @@ def movie_detail(page, count):
     {
         '_id': 0
     }).skip(page * count).limit(count):
+
         # 加入 movie total message
         item.setdefault('movie_total', 0)
-        item['movie_total'] = movie_total.get(item.get('movieId', 0))
+        item['movie_total'] = movie_total.get(item.get('movieId'))
         # 加入 Link message
         item.setdefault('movie_link', None)
         item['movie_link'] = movie_link.get(item.get('movieId'))
+        item['video_url'] = movie_link.get(item.get('movieId')).get('video_url')
 
         movie_details_record.append(item)
 
@@ -146,7 +140,7 @@ def get_user_detail(index_page=0, count=10):
     """
     base_user = database.user_detail.find({
 
-    },{
+    }, {
         'pwd': 0,
     }).skip(index_page * count).limit(count)
 
@@ -160,10 +154,12 @@ def get_user_detail(index_page=0, count=10):
 if __name__ == "__main__":
     # data = user_record(1)
 
-    # data = movie_detail()
-    data = get_user_detail(5, 10)
+    data = movie_detail(0, 10)
+    # data = get_user_detail(5, 10)
 
     print(type(data))
     for i in data:
         print(i)
-        # break
+        break
+
+    # print(count_table('ratings', 1, 10, {'user': 1}))

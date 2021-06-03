@@ -21,33 +21,84 @@
 
 <body>
 {% if login_page %}
-{% block login %}
-{% endblock %}
+    {% block login %}
+    {% endblock %}
 {% endif %}
 {% if sign_page %}
-{% block sign %}
-{% endblock %}
+    {% block sign %}
+    {% endblock %}
 {% endif %}
-<!--
-<div class="container">
-    <form class="form-signin", action="/login" method="post">
-        <h2 class="form-signin-heading">用户登录</h2>
-        <label for="inputEmail" class="sr-only">用户名</label>
-        <input type="text" id="" class="form-control" name="username"
-               placeholder="user name" required autofocus>
-        <label for="inputPassword" class="sr-only">密码</label>
-        <input type="password" id="inputPassword" class="form-control", name="password"
-               placeholder="Password" required>
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" value="remember-me"> 记住我
-            </label>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit"> 登录
-        </button>
-    </form>
-</div>
-{#<!-- /container -->#}
--->
+{% if forget_pwd %}
+    {% block change_pwd %}
+    {% endblock %}
+{% endif %}
+{#<script href="{{ url_for('static' 'js/jquery-3.3.1.js') }}"></script>#}
 </body>
+<script src="{{ url_for('static', filename='js/jquery-3.3.1.js') }}"></script>
+<script>
+
+    function valid_pwd(){
+        var sign_pwd = $('#sign_password').val()
+        var sign_2_pwd = $('#doublePassword').val()
+        if (sign_2_pwd != sign_pwd) {
+            alert("两次密码不一致")
+            $('#doublePassword').val('')
+        }
+    }
+
+    {#$('#sign_password').change(valid_pwd)#}
+    $('#doublePassword').change(valid_pwd)
+
+    $('#sign_username').change(function () {
+        var input_msg = $('#sign_username').val()
+        if (input_msg == ""){
+            alert("用户名为空")
+        }
+
+        $.ajax({
+            url: '/valid_name',
+            data: JSON.stringify({
+                'username': input_msg,
+            }),
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+                if (data['success']){
+
+                } else {
+                    alert(data['reason'])
+                }
+
+            }
+        })
+    })
+
+    function login() {
+        var nick = $('#nick').val();
+        if (nick === '') {
+            alert('昵称不能为空！');
+            return
+        }
+        $.ajax({
+            url: '/login',
+            data: JSON.stringify({
+                'nick': nick
+            }),
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (data) {
+                if (!data['success']) {
+                    alert(data['reason'])
+                } else {
+                    window.location.replace('/room')
+                }
+            }
+        })
+    }
+
+
+</script>
 </html>

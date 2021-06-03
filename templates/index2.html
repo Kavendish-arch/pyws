@@ -19,27 +19,33 @@
           href="{{ url_for('static', filename='css/bootstrap.css') }}"
           media="all"/>
 
-    <!--infrastructure CSS-->
-    {#    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}" media="all"/>#}
-    {#    <link type="text/css" `rel="stylesheet" href="{{ url_for('static', 'css/chocolat.css') }}" media="screen"/>#}
-    {#    <link type="text/css" rel="stylesheet" href="{{ url_for('static', 'css/popuo-box.css') }}" media="all"/>#}
 
     <!--local CSS-->
     <link type="text/css" rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}" media="all"/>
 
-    <!--JS-->
-    {#    <script type="text/javascript" src="{{ url_for('static',"js/jquery-1.11.1.min.js") }}"></script>#}
-    {#    <script type="text/javascript" src="{{ url_for('static',"js/easing.js") }}"></script>#}
-    {#    <script type="text/javascript" src="{{ url_for('static',"js/move-top.js") }}"></script>#}
-    {#    <script type="text/javascript" src="{{ url_for('static',"js/wow.min.js") }}"></script>#}
+
 </head>
 <body>
 {% include 'navbar.html' %}
+<div class="clearfix"></div>
+{#{% include 'banner.html' %}#}
+<br>
 <div class="clearfix"></div>
 {% include 'contend.html' %}
 <div class="clearfix"></div>
 
 {% include 'footer.html' %}
+
+<script src="{{ url_for('static', filename='js/holder.min.js') }}"></script>
 </body>
+<script src="{{ url_for('static', filename='js/page_util.js') }}"></script>
+<script>
+    page_util(get_url_path());
+
+    $('#sousuo').click(function () {
+        var userId = String($('#user_search_id').val());
+        var search_url = get_url_path() + "?user_search_id=" + userId + "&time=1212";
+    })
+</script>
 </html>

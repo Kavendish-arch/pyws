@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="author" content="chen ying tao">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="index of movie navigation">
+    <meta charset="UTF-8">
+    <meta name="keywords" content=""/>
+
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title> index {{ username }}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/item.css') }}">
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/bootstrap.css') }}"
+          media="all"/>
+
+    <!--local CSS-->
+    <link type="text/css" rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}" media="all"/>
+
+
+</head>
+<body>
+{% include 'navbar.html' %}
+<div class="clearfix"></div>
+<style>
+    .list-group h2{
+        line-height: 30px;
+        background-color: #9acfea;
+        font-size: 16px;
+
+    }
+    .col-xs-6 h2 {
+        font-size: 14px;
+    }
+
+    .col-xs-6 p {
+        font-size: 14px;
+    }
+
+    .col-xs-6 p img {
+        font-size: 14px;
+        width: 160px;
+    }
+
+    .list-group{
+        background-color: #ffffff;
+        color: #ffffff;
+    }
+
+    .list-group a{
+        font-size: 10px;
+        line-height: 20px;
+        background-color: #ffffff;
+    }
+</style>
+<div class="container">
+
+    <div class="row row-offcanvas row-offcanvas-right">
+
+        <div class="col-xs-12 col-sm-9">
+            <div class="row">
+                <video controls="controls" class="col-sm-12"
+                       src="{{ video_url }}"></video>
+            </div>
+        </div><!--/.sidebar-offcanvas-->
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+            <div class="list-group">
+{#                <h2>猜你喜欢</h2>#}
+                {% for item in top_movie %}
+                    <a href="{{ item.video_url }}" class="list-group-item active">{{ item.title }}</a>
+                {% endfor %}
+            </div>
+        </div><!--/.sidebar-offcanvas-->
+    </div><!--/row-->
+    <hr>
+</div><!--/.container-->
+
+<br>
+<div class="clearfix"></div>
+
+{% include 'footer.html' %}
+
+<script src="{{ url_for('static', filename='js/holder.min.js') }}"></script>
+</body>
+<script src="{{ url_for('static', filename='js/page_util.js') }}"></script>
+</html>

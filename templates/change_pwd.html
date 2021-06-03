@@ -1,0 +1,35 @@
+{% extends 'signin.html' %}
+{% block change_pwd %}
+<div class="container">
+    <form class="form-signin", action="/change_pwd" method="post" id="ch_pwd_form">
+        <h2 class="form-signin-heading">修改密码</h2>
+
+        <label for="ch_pwd_username" class="sr-only">用户名</label>
+        <input type="text" class="form-control" name="username" id="ch_pwd_username"
+               placeholder="username" required autofocus>
+
+        <label for="ch_pwd_inputName" class="sr-only">真实姓名</label>
+        <input type="text" id="ch_pwd_inputName" class="form-control" name="name"
+               placeholder="name" required autofocus>
+
+
+        <label for="ch_pwd_phone" class="sr-only">手机号码</label>
+        <input type="text" class="form-control" name="phone" id="ch_pwd_phone"
+               placeholder="phone" required autofocus>
+
+        <label for="ch_pwd_password" class="sr-only">密码</label>
+        <input type="password" id="ch_pwd_password" class="form-control", name="password"
+               placeholder="Password" required>
+
+        <label for="doublePassword" class="sr-only">确认密码</label>
+        <input type="password" id="ch_pwd_doublePassword" class="form-control", name="double_password"
+               placeholder="Confirm Password" required>
+
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit"> 提交
+        </button>
+    </form>
+</div> <!-- /container -->
+
+{% endblock %}
+

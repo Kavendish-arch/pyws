@@ -1,4 +1,5 @@
 import hashlib
+from datetime import datetime
 
 
 def get_md5(username, password):
@@ -14,7 +15,8 @@ def get_md5(username, password):
     # :return:
     """
     m = hashlib.md5()
-    m.update(bytes(username + password + 'the salt', encoding='utf-8'))
+    m.update(bytes(username + password + 'the salt' + str(datetime.now())
+                   , encoding='utf-8'))
     return m.hexdigest()
 
 

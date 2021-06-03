@@ -19,6 +19,7 @@
         if(canvas && canvas.getContext){
             ctx = canvas.getContext("2d");
         }
+        
         initChart(); // 图表初始化
         drawLineLabelMarkers(); // 绘制图表轴、标签和标记
         drawBarAnimate(); // 绘制柱状图的动画
@@ -53,8 +54,8 @@
         // 图表初始化
         function initChart(){
             // 图表信息
-            cMargin = 30;
-            cSpace = 60;
+            cMargin = 20;
+            cSpace = 40;
             cHeight = canvas.height - cMargin*2 - cSpace;
             cWidth = canvas.width - cMargin*2 - cSpace;
             originX = cMargin + cSpace;
@@ -138,10 +139,10 @@
             // 绘制标题 y
             ctx.save();
             ctx.rotate(-Math.PI/2);
-            ctx.fillText("全国新增病例", -canvas.height/2, cSpace-10);
+            ctx.fillText("电影观看数", -canvas.height/2, cSpace-10);
             ctx.restore();
             // 绘制标题 x
-            ctx.fillText("日 期", originX+cWidth/2, originY+cSpace/2+10);
+            ctx.fillText("电影id", originX+cWidth/2, originY+cSpace/2+10);
         };
 
         //绘制柱形图
@@ -180,11 +181,36 @@
             ctx.closePath();
 
         }
-
-
     }
 
-
-    goBarChart(
-        [[2.22, 649], [2.23, 416], [2.24, 517], [2.25, 411], [2.26, 440], [2.27, 329], [2.28,430], [2.29, 579], [3.1, 206], [3.2, 128], [3.3, 120], [3.4, 143], [3.5, 145], [3.6, 103], [3.7, 46]]
-    )
+    $.ajax({
+        type: 'get',
+        url: 'http://127.0.0.1:5000/get_total_movie?page=1&count=10',
+        dataType: 'jsonp',
+        success: function () {
+            console.log("OK")
+        }
+    })
+    
+    function bar_movie(url_m) {
+        $.ajax({
+            type: 'get',
+            // url: 'http://127.0.0.1:5000/get_total_movie?page='+page+'&count='+count,
+            url: url_m,
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (data) {
+                console.log("OK")
+                tmp = new Array();
+                console.log(data)
+                for (var i = 0; i < data['data'].length; i ++){
+                    tmp2 = [ data['data'][i]['title'], data['data'][i]['movie_total'] ]
+                    tmp.push(tmp2)
+                }
+                goBarChart(tmp)
+            },
+            error: function(data){
+            }
+        })
+    }
+    

@@ -1,6 +1,13 @@
 {% extends 'dashboard.html' %}
 {% block user_record_detail %}
-    <h2 class="sub-header">用户观影记录</h2>
+    <h2 class="sub-header">用户观影记录
+    <form class="navbar-form navbar-right" id="search_title"
+                  action="{{ url_for('get_detail', d_type='u_record') }}" method="get">
+                <input type="text" id="user_search_id" name="user_id"
+                       class="form-control" placeholder="搜索用户id">
+                <button type="submit" id="sousuo" class="btn">搜索</button>
+            </form>
+    </h2>
 {#    <input type="text" id="user_search_id" class="form-control" placeholder="搜索用户记录">#}
 {#    <button id="sousuo">搜索</button>#}
     <div class="table-responsive">

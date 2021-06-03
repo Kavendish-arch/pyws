@@ -1,9 +1,9 @@
 import csv
 import pymongo
-import redis
 
 
-mongo_ip = "192.168.43.184"
+# mongo_ip = "192.168.43.184"
+mongo_ip = "192.168.1.115"
 mongo_port = 27017
 mongo_user = 'root'
 mongo_pwd = 'root'
@@ -11,7 +11,7 @@ uri = "mongodb://{0}:{1}@{2}:{3}".format(mongo_user, mongo_pwd,
                                          mongo_ip, mongo_port)
 
 
-uri = "mongodb://root:root@192.168.43.184:27017"
+uri = "mongodb://root:root@" + mongo_ip+":27017"
 database = pymongo.MongoClient(uri).chapter_4
 
 
@@ -164,42 +164,49 @@ data = \
              [{'movieId': 2115,
                'title': 'Indiana Jones and the Temple of Doom (1984)',
                'genres': 'Action|Adventure|Fantasy',
+               'img_url': 'http://127.0.0.1:5000/img/1pylO6YX5XdOA6QCc5IRxrrffkg.jpg',
                'imdbId': 'http://www.imdb.com/title/tt87469',
                'tmdbId': 'https://www.themoviedb.org/movie/87',
                'ratings': 76.45141047797219},
               {'movieId': 1196,
                'title': 'Star Wars: Episode V - The Empire Strikes Back (1980)',
                'genres': 'Action|Adventure|Sci-Fi',
+               'img_url': 'http://127.0.0.1:5000/img/1pylO6YX5XdOA6QCc5IRxrrffkg.jpg',
                'imdbId': 'http://www.imdb.com/title/tt80684',
                'tmdbId': 'https://www.themoviedb.org/movie/1891',
                'ratings': 53.172590388030244},
               {'movieId': 1923,
                'title': "There's Something About Mary (1998)",
                'genres': 'Comedy|Romance',
+               'img_url': 'http://127.0.0.1:5000/img/1pylO6YX5XdOA6QCc5IRxrrffkg.jpg',
                'imdbId': 'http://www.imdb.com/title/tt129387',
                'tmdbId': 'https://www.themoviedb.org/movie/544',
                'ratings': 36.032801193125835},
               {'movieId': 1200,
                'title': 'Aliens (1986)',
                'genres': 'Action|Adventure|Horror|Sci-Fi',
+               'img_url': 'http://127.0.0.1:5000/img/1pylO6YX5XdOA6QCc5IRxrrffkg.jpg',
                'imdbId': 'http://www.imdb.com/title/tt90605',
                'tmdbId': 'https://www.themoviedb.org/movie/679',
                'ratings': 35.64895451997378},
               {'movieId': 480,
                'title': 'Jurassic Park (1993)',
                'genres': 'Action|Adventure|Sci-Fi|Thriller',
+               'img_url': 'http://127.0.0.1:5000/img/1pylO6YX5XdOA6QCc5IRxrrffkg.jpg',
                'imdbId': 'http://www.imdb.com/title/tt107290',
                'tmdbId': 'https://www.themoviedb.org/movie/329',
                'ratings': 34.97835205157789},
               {'movieId': 1380,
                'title': 'Grease (1978)',
                'genres': 'Comedy|Musical|Romance',
+               'img_url': 'http://127.0.0.1:5000/img/1pylO6YX5XdOA6QCc5IRxrrffkg.jpg',
                'imdbId': 'http://www.imdb.com/title/tt77631',
                'tmdbId': 'https://www.themoviedb.org/movie/621',
                'ratings': 30.092855674772846},
               {'movieId': 2028,
                'title': 'Saving Private Ryan (1998)',
                'genres': 'Action|Drama|War',
+               'img_url': 'http://127.0.0.1:5000/img/1pylO6YX5XdOA6QCc5IRxrrffkg.jpg',
                'imdbId': 'http://www.imdb.com/title/tt120815',
                'tmdbId': 'https://www.themoviedb.org/movie/857',
                'ratings': 30.014776987975168},
@@ -207,19 +214,24 @@ data = \
                'title': 'Die Hard (1988)',
                'genres': 'Action|Crime|Thriller',
                'imdbId': 'http://www.imdb.com/title/tt95016',
+               'img_url': 'http://127.0.0.1:5000/img/1pylO6YX5XdOA6QCc5IRxrrffkg.jpg',
                'tmdbId': 'https://www.themoviedb.org/movie/562',
                'ratings': 29.529508499632268},
               {'movieId': 47,
                'title': 'Seven (a.k.a. Se7en) (1995)',
                'genres': 'Mystery|Thriller',
                'imdbId': 'http://www.imdb.com/title/tt114369',
+               'img_url': 'http://127.0.0.1:5000/img/1pylO6YX5XdOA6QCc5IRxrrffkg.jpg',
                'tmdbId': 'https://www.themoviedb.org/movie/807',
                'ratings': 29.282623651730994},
               {'movieId': 2683,
                'title': 'Austin Powers: The Spy Who Shagged Me (1999)',
                'genres': 'Action|Adventure|Comedy',
                'imdbId': 'http://www.imdb.com/title/tt145660',
+               'img_url': 'http://127.0.0.1:5000/img/1pylO6YX5XdOA6QCc5IRxrrffkg.jpg',
                'tmdbId': 'https://www.themoviedb.org/movie/817',
                'ratings': 25.84264861921086}
               ]
          }
+
+tmp_data = data.copy()

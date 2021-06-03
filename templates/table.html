@@ -1,0 +1,64 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 col-xs-6 col-sm-9">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>用户名</th>
+                    <th>电影名</th>
+                    <th>电影类型</th>
+                    <th>评分</th>
+                    <th>删除</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in data %}
+                    <tr>
+                        <td name="movieId">{{ item.user }}</td>
+                        <td>{{ item.movie.title }}</td>
+                        <td>{{ item.movie.genres }}</td>
+                        <td>{{ item.rating }}</td>
+                        <td>
+                            <button class="btn btn-warning">删除</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <p>
+                <button type="button" class="btn btn-info" id="last_page_to">
+                    上一页
+                </button>
+                <button value="{{ page_info.min_page_index }}"
+                        class="btn btn-default"
+                        id="min_page_index">{{ page_info.min_page_index }}</button>
+
+                <input name="to_page" id="page_id"
+                       value="{{ page_info.page_id }}" type="number"
+                       class="btn btn-default">
+
+                <button type="button" class="btn btn-default" id="to_page"
+                        value="{{ page_info.count }}">跳转
+                </button>
+                <button value="{{ page_info.max_page_index }}"
+                        class="btn btn-default"
+                        id="max_page_index">{{ page_info.max_page_index }}</button>
+                <button type="button" class="btn btn-info" id="next_page_to">
+                    下一页
+                </button>
+                <a href="{{ url_for('get_detail', d_type='movie') }}"></a>
+        </div>
+    </div>
+    <script src="{{ url_for('static',filename='js/jquery-3.3.1.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/page_util.js') }}"></script>
+    <script>
+        page_util(get_url_path());
+
+        $('#sousuo').click(function () {
+            var userId = String($('#user_search_id').val());
+            var search_url = get_url_path() + "?user_search_id=" + userId + "&time=1212";
+            console.log(search_url);
+        })
+    </script>
+</div>
+

@@ -35,6 +35,32 @@ class Page(object):
             return
 
 
+def get_page(request ):
+
+    page_index = request.args.get("page")
+    count = request.args.get("count")
+
+    try:
+        page_i = int(page_index)
+        count = int(count)
+    except ValueError:
+        page_i = 1
+        count = 30
+    except BaseException:
+        page_i = 1
+        count = 30
+
+    page_info = {
+        'min_page_index': 1,
+        'max_page_index': 10,
+        'page_id': page_i,
+        'count': count,
+    }
+
+    return page_info
+
+
+
 if __name__=="__main__":
 
     page = Page(0, 10, 500)

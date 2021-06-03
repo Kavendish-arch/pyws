@@ -1,42 +1,49 @@
 {% extends 'login.html' %}
 {% block sign %}
-<div class="container">
-    <form class="form-signin", action="/sign" method="post">
-        <h2 class="form-signin-heading">用户注册</h2>
+    <div class="container">
+        <form class="form-signin" , action="/sign" method="post" id="sign_form">
+            <h2 class="form-signin-heading">用户注册</h2>
 
-        <label for="username" class="sr-only">用户名</label>
-        <input type="text" class="form-control" name="username" id="username"
-               placeholder="username" required autofocus>
+            <label for="sign_username" class="sr-only">用户名</label>
+            <input type="text" class="form-control" name="username"
+                   id="sign_username"
+                   placeholder="username" required autofocus>
 
-        <label for="inputName" class="sr-only">真实姓名</label>
-        <input type="text" id="inputName" class="form-control" name="name"
-               placeholder="name" required autofocus>
+            <label for="sign_inputName" class="sr-only">真实姓名</label>
+            <input type="text" id="sign_inputName" class="form-control"
+                   name="name"
+                   placeholder="name" required autofocus>
 
-        <label for="email" class="sr-only">邮箱</label>
-        <input type="email" class="form-control" name="email" id="email"
-               placeholder="email" required autofocus>
+            <label for="sign_email" class="sr-only">邮箱</label>
+            <input type="email" class="form-control" name="email"
+                   id="sign_email"
+                   placeholder="email" required autofocus>
 
-        <label for="phone" class="sr-only">手机号码</label>
-        <input type="text" class="form-control" name="phone" id="phone"
-               placeholder="phone" required autofocus>
+            <label for="sign_phone" class="sr-only">手机号码</label>
+            <input type="text" class="form-control" name="phone" id="sign_phone"
+                   placeholder="phone" required autofocus>
 
-        <label for="inputPassword" class="sr-only">密码</label>
-        <input type="password" id="inputPassword" class="form-control", name="password"
-               placeholder="Password" required>
+            <label for="sign_password" class="sr-only">密码</label>
+            <input type="password" id="sign_password" class="form-control" ,
+                   name="password"
+                   placeholder="Password" required>
 
-        <label for="doublePassword" class="sr-only">确认密码</label>
-        <input type="password" id="doublePassword" class="form-control", name="double_password"
-               placeholder="Confirm Password" required>
+            <label for="doublePassword" class="sr-only">确认密码</label>
+            <input type="password" id="doublePassword" class="form-control" ,
+                   name="double_password"
+                   placeholder="Confirm Password" required>
 
 
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" value="remember-me"> 记住我
-            </label>
-            <label><a href="/login">已有账号？登录</a></label>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit"> 注册
-        </button>
-    </form>
-</div> <!-- /container -->
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" value="remember-me"> 记住我
+                </label>
+                <label><a href="/login">已有账号？登录</a></label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit"> 注册
+            </button>
+        </form>
+    </div> <!-- /container -->
+
 {% endblock %}
+
